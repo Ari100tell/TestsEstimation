@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="edu.cads.testestimation.database.hibernate.logic.EstimationResults" table="ESTIMATION_RESULTS"
+           catalog="logic">
+
+        <id name="estimationNumber" type="java.lang.Integer">
+            <column name="ESTIMATION_NUMBER"/>
+            <generator class="increment"/>
+        </id>
+
+        <property name="estimationDate" type="string">
+            <column name="ESTIMATION_DATE" not-null="true"/>
+        </property>
+
+        <property name="internalResultsDate" type="string">
+            <column name="INTERNAL_RESULTS_DATE" not-null="true"/>
+        </property>
+
+        <property name="introducingResultNumber" type="java.lang.Integer">
+            <column name="INTRODUCING_RESULT_NUMBER"/>
+        </property>
+
+        <property name="implementationPlanName" type="string">
+            <column name="IMPLEMENTATION_PLAN_NAME" length="20" not-null="true" unique="true"/>
+        </property>
+
+        <property name="implementationPlanVersion" type="int">
+            <column name="IMPLEMENTATION_PLAN_VERSION" not-null="false" unique="true"/>
+        </property>
+
+        <property name="successProbability" type="int">
+            <column name="SUCCESS_PROBABILITY"/>
+        </property>
+
+        <property name="expectedIncome" type="java.lang.Long">
+            <column name="EXPECTED_INCOME"/>
+        </property>
+
+        <property name="needIntroduction" type="boolean">
+            <column name="NEED_INTRODUCTION"/>
+        </property>
+
+    </class>
+</hibernate-mapping>
