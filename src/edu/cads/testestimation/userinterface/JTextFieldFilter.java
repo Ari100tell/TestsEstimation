@@ -90,7 +90,6 @@ class JTextFieldFilter extends PlainDocument {
         } else {
             super.insertString(offset, str.substring(0, max), attr);
         }
-
         // super.insertString(offset, str, attr);
     }
 

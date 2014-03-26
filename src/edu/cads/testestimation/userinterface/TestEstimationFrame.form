@@ -656,13 +656,10 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Courier New" size="12" style="0"/>
                     </Property>
-                    <Property name="editor" type="javax.swing.JComponent" editor="org.netbeans.modules.form.editors.SpinnerEditorEditor">
-                      <SpinnerEditor format="" type="3"/>
-                    </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100,1))"/>
-                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor)jspinnerNumberResult.getEditor();&#xa;DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();&#xa;formatter.setAllowsInvalid(false);"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100000,1))"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="jspinnerNumberResult.setToolTipText(&quot;&#x41e;&#x431;&#x435;&#x440;&#x456;&#x442;&#x44c; &#x43d;&#x43e;&#x43c;&#x435;&#x440; &#x441;&#x43f;&#x438;&#x43a;&#x443; &#x440;&#x435;&#x437;&#x443;&#x43b;&#x44c;&#x442;&#x430;&#x442;&#x456;&#x432; [0;100000]&quot;);&#xa;JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor)jspinnerNumberResult.getEditor();&#xa;DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();&#xa;formatter.setAllowsInvalid(false);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel9">
@@ -1016,7 +1013,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100,1))"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100000,1))"/>
                     <AuxValue name="JavaCodeGenerator_DeclarationPre" type="java.lang.String" value="private SpinnerNumberModel spinnerNumberModel;"/>
                     <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JSpinner.NumberEditor jsEditorModalResult = (JSpinner.NumberEditor)jSpinnerModalResultNumber.getEditor();&#xa;DefaultFormatter formatterModalResult = (DefaultFormatter) jsEditorModalResult.getTextField().getFormatter();&#xa;formatterModalResult.setAllowsInvalid(false);"/>
                   </AuxValues>
@@ -1226,7 +1223,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100,1))"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JSpinner(new SpinnerNumberModel(0,0,1000,1))"/>
                     <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JSpinner.NumberEditor jsEditorIntroductionData = (JSpinner.NumberEditor)jSpinner1.getEditor();&#xa;DefaultFormatter formatterIntroductionData = (DefaultFormatter) jsEditorIntroductionData.getTextField().getFormatter();&#xa;formatterIntroductionData.setAllowsInvalid(false);"/>
                   </AuxValues>
                 </Component>

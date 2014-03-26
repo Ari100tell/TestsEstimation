@@ -51,7 +51,7 @@ private String directoryName = System.getProperty("user.dir");
         jPanel6 = new javax.swing.JPanel();
         jTabbedPaneDate = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
-        jspinnerNumberResult = new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100,1));
+        jspinnerNumberResult = new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100000,1));
         jLabel9 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jTextField9 = new javax.swing.JTextField();
@@ -122,7 +122,7 @@ private String directoryName = System.getProperty("user.dir");
         jTextField3 = new javax.swing.JTextField();
         jTextField5 = new javax.swing.JTextField();
         jTextField7 = new javax.swing.JTextField();
-        jSpinnerModalResultNumber = new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100,1));
+        jSpinnerModalResultNumber = new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100000,1));
         MaskFormatter formatter10 = null;
         try {
             formatter10 = new MaskFormatter("##.#%");
@@ -150,7 +150,7 @@ private String directoryName = System.getProperty("user.dir");
         jLabel25 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
         jTextField25 = new javax.swing.JTextField();
-        jSpinner1 = new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100,1));
+        jSpinner1 = new javax.swing.JSpinner(new SpinnerNumberModel(0,0,1000,1));
         MaskFormatter formatter12 = null;
         try {
             formatter12 = new MaskFormatter("##.#%");
@@ -298,11 +298,11 @@ private String directoryName = System.getProperty("user.dir");
 
         jPanel6.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
+        jspinnerNumberResult.setToolTipText("Оберіть номер спику результатів [0;100000]");
         JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor)jspinnerNumberResult.getEditor();
         DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();
         formatter.setAllowsInvalid(false);
         jspinnerNumberResult.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
-        jspinnerNumberResult.setEditor(new javax.swing.JSpinner.NumberEditor(jspinnerNumberResult, ""));
 
         jLabel9.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jLabel9.setText("Номер списку результатів");
