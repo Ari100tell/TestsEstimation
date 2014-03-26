@@ -13,15 +13,12 @@
         <property name="hbm2ddl.auto">update</property>
         <property name="hibernate.connection.autocommit">false</property>
         <property name="current_session_context_class">thread</property>
-
         <mapping class="edu.cads.testestimation.database.hibernate.logic.EstimationResults" />
         <mapping class="edu.cads.testestimation.database.hibernate.logic.InternalTestingResults" />
-        <mapping class="edu.cads.testestimation.database.hibernate.logic.IntroducingPlan" />
+        <mapping class="edu.cads.testestimation.database.hibernate.logic.ImplementationPlan" />
         <mapping class="edu.cads.testestimation.database.hibernate.logic.IntroducingResults" />
         <mapping class="edu.cads.testestimation.database.hibernate.logic.SystemTestingResults" />
         <mapping class="edu.cads.testestimation.database.hibernate.logic.UnitTestingResults" />
         <mapping class="test.logic.Student" />
-
-
     </session-factory>
 </hibernate-configuration>
