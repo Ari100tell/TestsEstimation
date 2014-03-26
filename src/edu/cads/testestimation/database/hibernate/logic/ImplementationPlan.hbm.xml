@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="edu.cads.testestimation.database.hibernate.logic.ImplementationPlan" table="IMPLEMENTATION_PLAN"
+           catalog="logic">
+
+        <id name="implementationPlanNumber" type="java.lang.Integer">
+            <column name="IMPLEMENTATION_PLAN_NUMBER"/>
+            <generator class="increment"/>
+        </id>
+
+        <property name="implementationPlanName" type="string">
+            <column name="IMPLEMENTATION_PLAN_NAME" not-null="true"/>
+        </property>
+
+        <property name="estimationDate" type="string">
+            <column name="IMPLEMENTATION_DATE" not-null="true"/>
+        </property>
+
+        <property name="expectedIncome" type="java.lang.Integer">
+            <column name="EXPECTED_INCOME"/>
+        </property>
+
+        <property name="stability" type="string">
+            <column name="STABILITY" length="20" not-null="true" unique="true"/>
+        </property>
+
+        <property name="totalBugs" type="int">
+            <column name="TOTAL_BUGS" not-null="false" unique="true"/>
+        </property>
+
+        <property name="totalUserEstimation" type="int">
+            <column name="TOTAL_USER_ESTIMATION"/>
+        </property>
+
+        <property name="expectedIncome" type="java.lang.Long">
+            <column name="EXPECTED_INCOME"/>
+        </property>
+
+    </class>
+</hibernate-mapping>

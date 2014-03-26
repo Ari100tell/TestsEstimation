@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="edu.cads.testestimation.database.hibernate.logic.IntroducingResults" table="INTRODUCING_RESULTS"
+           catalog="logic">
+
+        <id name="introducingResultNumber" type="java.lang.Integer">
+            <column name="INTRODUCING_RESULT_NUMBER"/>
+            <generator class="increment"/>
+        </id>
+
+        <property name="introducingResultDate" type="string">
+            <column name="INTRODUCING_RESULT_DATE" not-null="true"/>
+        </property>
+
+        <property name="totalBugs" type="java.lang.Integer">
+            <column name="TOTAL_BUGS" not-null="true"/>
+        </property>
+
+        <property name="totalUserEstimation" type="java.lang.Integer">
+            <column name="TOTAL_USER_ESTIMATION"/>
+        </property>
+
+        <property name="fundsSpentOnImplementation" type="java.lang.Integer">
+            <column name="FUNDS_SPENT_ON_IMPLEMENTATION" length="20" not-null="true" unique="true"/>
+        </property>
+
+        <property name="stability" type="java.lang.Integer">
+            <column name="STABILITY" />
+        </property>
+
+        <property name="preliminaryIncome" type="java.lang.Integer">
+            <column name="PRELIMINARY_INCOME"/>
+        </property>
+
+
+    </class>
+</hibernate-mapping>

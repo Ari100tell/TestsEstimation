@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="edu.cads.testestimation.database.hibernate.logic.UnitTestingResults" table="UNIT_TESTING_RESULTS"
+           catalog="logic">
+
+        <id name="unitTestingNumber" type="java.lang.Integer">
+            <column name="UNIT_TESTING_NUMBER"/>
+            <generator class="increment"/>
+        </id>
+
+        <property name="systemName" type="string">
+            <column name="SYSTEM_NAME" not-null="true"/>
+        </property>
+
+        <property name="totalBugs" type="java.lang.Integer">
+            <column name="TOTAL_BUGS" not-null="true"/>
+        </property>
+
+        <property name="evaluationRegressionTesting" type="java.lang.Integer">
+            <column name="EVALUATION_REGRESSION_TESTING"/>
+        </property>
+
+        <property name="mockObjectNumber" type="java.lang.Integer">
+            <column name="MOCK-OBJECT_NUMBER"/>
+        </property>
+
+        <property name="coverRatioUnitTests" type="java.lang.Integer">
+            <column name="COVER_RATIO_UNIT_TESTS"/>
+        </property>
+
+        <property name="reportedBugsNumber" type="java.lang.Integer">
+            <column name="REPORTED_BUGS_NUMBER"/>
+        </property>
+
+        <property name="totalBugFixes" type="java.lang.Integer">
+            <column name="TOTAL_BUG_FIXES"/>
+        </property>
+
+        <property name="testingData" type="string">
+            <column name="TESTING_DATA" length="20" not-null="true" unique="true"/>
+        </property>
+    </class>
+</hibernate-mapping>

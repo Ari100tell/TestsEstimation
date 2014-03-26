@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="edu.cads.testestimation.database.hibernate.logic.InternalTestingResults" table="INTERNAL_TESTING_RESULTS"
+           catalog="logic">
+
+        <id name="internalResultDate" type="string">
+            <column name="INTERNAL_RESULTS_DATE"/>
+            <generator class="increment"/>
+        </id>
+
+        <property name="systemTestingNumber" type="java.lang.Integer">
+            <column name="SYSTEM_TESTING_NUMBER" not-null="true"/>
+        </property>
+
+        <property name="unitTestingNumber" type="java.lang.Integer">
+            <column name="UNIT_TESTING_NUMBER" not-null="true"/>
+        </property>
+
+        <property name="userRating" type="java.lang.Integer">
+            <column name="USER_RATING"/>
+        </property>
+
+        <property name="percentEfficiencySoftware" type="java.lang.Integer">
+            <column name="PERCENT_EFFICIENCY_SOFTWARE" length="20" not-null="true" unique="true"/>
+        </property>
+
+        <property name="fixesBugsPercent" type="java.lang.Integer">
+            <column name="FIXES_BUGS_PERCENT" not-null="false" unique="true"/>
+        </property>
+
+        <property name="criticalStrikeChanceBug" type="java.lang.Integer">
+            <column name="CRITICAL_STRIKE_CHANCE_BUG"/>
+        </property>
+
+        <property name="availabilityMajorBugs" type="java.lang.Integer">
+            <column name="AVAILABILITY_MAJOR_BUGS"/>
+        </property>
+
+    </class>
+</hibernate-mapping>

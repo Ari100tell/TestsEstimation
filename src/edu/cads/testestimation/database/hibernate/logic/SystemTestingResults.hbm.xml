@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="edu.cads.testestimation.database.hibernate.logic.SystemTestingResults" table="SYSTEM_TESTING_RESULTS"
+           catalog="logic">
+
+        <id name="systemTestingNumber" type="java.lang.Integer">
+            <column name="SYSTEM_TESTING_NUMBER"/>
+            <generator class="increment"/>
+        </id>
+
+        <property name="systemName" type="string">
+            <column name="SYSTEM_NAME" not-null="true"/>
+        </property>
+
+        <property name="totalBugs" type="java.lang.Integer">
+            <column name="TOTAL_BUGS" not-null="true"/>
+        </property>
+
+        <property name="totalBugFixes" type="java.lang.Integer">
+            <column name="TOTAL_BUG_FIXES"/>
+        </property>
+
+        <property name="testingData" type="string">
+            <column name="TESTING_DATA" length="20" not-null="true" unique="true"/>
+        </property>
+
+        <property name="evaluationUsability" type="int">
+            <column name="EVALUATION_USABILITY" />
+        </property>
+
+        <property name="exerciseTestingEvaluation" type="int">
+            <column name="EXERCISE_TESTING_EVALUATION"/>
+        </property>
+
+        <property name="evaluationUI" type="int">
+            <column name="EVALUATION_UI"/>
+        </property>
+
+        <property name="evaluationCompatibility" type="int">
+            <column name="EVALUATION_COMPATIBILITY"/>
+        </property>
+
+        <property name="evaluationSafety" type="int">
+            <column name="EVALUATION_SAFETY"/>
+        </property>
+
+        <property name="evaluationPerformance" type="int">
+            <column name="EVALUATION_PERFORMANCE"/>
+        </property>
+
+    </class>
+</hibernate-mapping>
