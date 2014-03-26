@@ -9,13 +9,14 @@ import javax.persistence.*;
 public class EstimationResults {
     private Integer estimationNumber;
     private String estimationDate;
-    private String internalResultsDate;
+    private String internalResultsNumber;
     private Integer introducingResultNumber;
-    private String implementationPlanName;
-    private int implementationPlanVersion;
+    private String implementationPlanNumber;
     private int successProbability;
     private Long expectedIncome;
     private boolean needIntroduction;
+
+
 
     @Id
     @GeneratedValue(generator = "increment")
@@ -38,13 +39,14 @@ public class EstimationResults {
     public void setEstimationDate(String estimationDate) {
         this.estimationDate = estimationDate;
     }
-     @Column (name = "INTERNAL_RESULTS_DATE")
-    public String getInternalResultsDate() {
-        return internalResultsDate;
+
+    @Column (name = "INTERNAL_RESULTS_NUMBER")
+    public String getInternalResultsNumber() {
+        return internalResultsNumber;
     }
 
-    public void setInternalResultsDate(String internal_results_date) {
-        this.internalResultsDate = internal_results_date;
+    public void setInternalResultsNumber(String internalResultsNumber) {
+        this.internalResultsNumber = internalResultsNumber;
     }
 
     @Column(name = "INTRODUCING_RESULT_NUMBER")
@@ -56,22 +58,13 @@ public class EstimationResults {
         this.introducingResultNumber = introducing_Result_Number;
     }
 
-    @Column(name = "IMPLEMENTATION_PLAN_NAME")
-    public String getImplementationPlanName() {
-        return implementationPlanName;
+    @Column(name = "IMPLEMENTATION_PLAN_NUMBER")
+    public String getImplementationPlanNumber() {
+        return implementationPlanNumber;
     }
 
-    public void setImplementationPlanName(String name) {
-        this.implementationPlanName = name;
-    }
-
-    @Column(name = "IMPLEMENTATION_PLAN_VERSION")
-    public int getImplementationPlanVersion() {
-        return implementationPlanVersion;
-    }
-
-    public void setImplementationPlanVersion(int version) {
-        this.implementationPlanVersion = version;
+    public void setImplementationPlanNumber(String name) {
+        this.implementationPlanNumber = name;
     }
 
     @Column(name = "SUCCESS_PROBABILITY")
