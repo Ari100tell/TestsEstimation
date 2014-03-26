@@ -1,4 +1,4 @@
-package edu.cads.testestimation.database.hibernate.DAO.Impl;
+package edu.cads.testestimation.database.hibernate.DAO.impl;
 
 import edu.cads.testestimation.database.hibernate.DAO.EstimationResultsDAO;
 import edu.cads.testestimation.database.hibernate.logic.EstimationResults;
@@ -98,6 +98,5 @@ public class EstimationResultsDAOImpl implements EstimationResultsDAO {
                 session.close();
             }
         }
-
     }
 }
