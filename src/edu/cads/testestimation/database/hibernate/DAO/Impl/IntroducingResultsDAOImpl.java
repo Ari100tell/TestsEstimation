@@ -55,7 +55,7 @@ public class IntroducingResultsDAOImpl implements IntroducingResultsDAO {
         IntroducingResults introducingResults = null;
             try {
                 session = HibernateUtil.getSessionFactory().openSession();
-                introducingResults = (IntroducingResults) session.load( IntroducingResults.class, introducingResultNumber);
+                introducingResults = (IntroducingResults) session.get( IntroducingResults.class, introducingResultNumber);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e.getMessage(), "Ошибка I/O", JOptionPane.OK_OPTION);
             } finally {

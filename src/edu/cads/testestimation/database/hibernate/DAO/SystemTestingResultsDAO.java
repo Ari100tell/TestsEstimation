@@ -13,7 +13,7 @@ public interface SystemTestingResultsDAO {
 
     public void updateSystemTestingResults(SystemTestingResults systemTestingResults) throws SQLException;
 
-    public SystemTestingResults getSystemTestingResultsBySystemTestingNumber(Integer systemTestingNumber) throws SQLException;
+    public SystemTestingResults getSystemTestingResultsBySystemTestingNumber(int systemTestingNumber) throws SQLException;
 
     public List getAllSystemTestingResults() throws SQLException;
 

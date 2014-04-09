@@ -54,8 +54,10 @@ public class UnitTestingResultsDAOImpl implements UnitTestingResultsDAO {
         Session session = null;
         UnitTestingResults unitTestingResults = null;
         try {
+            System.out.println(unitTestingNumber);
             session = HibernateUtil.getSessionFactory().openSession();
-            unitTestingResults = (UnitTestingResults) session.load(UnitTestingResults.class, unitTestingNumber);
+            unitTestingResults = (UnitTestingResults) session.get(UnitTestingResults.class, unitTestingNumber);
+            System.out.println(unitTestingResults.getMockObjectNumber());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Ошибка I/O", JOptionPane.OK_OPTION);
         } finally {

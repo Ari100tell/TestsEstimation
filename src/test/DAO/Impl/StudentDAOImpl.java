@@ -50,7 +50,7 @@ public class StudentDAOImpl implements StudentDAO {
         Student stud = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
-            stud = (Student) session.load(Student.class, id);
+            stud = (Student) session.get(Student.class, id);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Ошибка I/O", JOptionPane.OK_OPTION);
         } finally {

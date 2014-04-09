@@ -4,12 +4,14 @@ import edu.cads.testestimation.database.hibernate.DAO.ImplementationPlanDAO;
 import edu.cads.testestimation.database.hibernate.logic.EstimationResults;
 import edu.cads.testestimation.database.hibernate.logic.ImplementationPlan;
 import edu.cads.testestimation.database.hibernate.util.HibernateUtil;
-import org.hibernate.Session;
-
-import javax.swing.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.*;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.exception.ConstraintViolationException;
 
 /**
  * Created by Ari100tell on 16.03.2014.
@@ -25,9 +27,11 @@ public class ImplementationPlanDAOImpl implements ImplementationPlanDAO {
             session.beginTransaction();
             session.save(implementationPlan);
             session.getTransaction().commit();
-        } catch (Exception e) {
+        } catch(ConstraintViolationException constraintViolationException){
+        JOptionPane.showMessageDialog(null, "Номер плану впровадження повинен бути унікальним", "Хибний номер плану", JOptionPane.ERROR_MESSAGE);
+        } catch (HibernateException e) {             
             JOptionPane.showMessageDialog(null, e.getMessage(), "Ошибка I/O", JOptionPane.OK_OPTION);
-        } finally {
+        } finally {              
             if (session != null && session.isOpen()) {
                 session.close();
             }
@@ -57,7 +61,7 @@ public class ImplementationPlanDAOImpl implements ImplementationPlanDAO {
         ImplementationPlan implementationPlan = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
-            implementationPlan = (ImplementationPlan) session.load(ImplementationPlan.class, implementationPlanNumber);
+            implementationPlan = (ImplementationPlan) session.get(ImplementationPlan.class, implementationPlanNumber);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Ошибка I/O", JOptionPane.OK_OPTION);
         } finally {

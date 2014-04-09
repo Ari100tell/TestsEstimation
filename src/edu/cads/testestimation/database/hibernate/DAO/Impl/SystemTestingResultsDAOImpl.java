@@ -50,12 +50,13 @@ public class SystemTestingResultsDAOImpl implements SystemTestingResultsDAO {
     }
 
     @Override
-    public SystemTestingResults getSystemTestingResultsBySystemTestingNumber(Integer systemTestingNumber) throws SQLException {
+    public SystemTestingResults getSystemTestingResultsBySystemTestingNumber(int systemTestingNumber) throws SQLException {
         Session session = null;
+        System.out.println("systemTestingNumber="+systemTestingNumber);
         SystemTestingResults systemTestingResults = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
-            systemTestingResults = (SystemTestingResults) session.load(SystemTestingResults.class, systemTestingNumber);
+            systemTestingResults = (SystemTestingResults) session.get(SystemTestingResults.class, systemTestingNumber);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Ошибка I/O", JOptionPane.OK_OPTION);
         } finally {

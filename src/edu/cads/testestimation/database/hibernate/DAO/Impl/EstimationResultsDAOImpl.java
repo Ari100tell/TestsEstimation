@@ -14,6 +14,8 @@ import java.util.List;
  * Created by Ari100tell on 16.03.2014.
  */
 public class EstimationResultsDAOImpl implements EstimationResultsDAO {
+
+    
     @Override
     public void addEstimationResults(EstimationResults estimationResults) throws SQLException {
         Session session = null;
@@ -54,7 +56,7 @@ public class EstimationResultsDAOImpl implements EstimationResultsDAO {
         EstimationResults estimationResults = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
-            estimationResults = (EstimationResults) session.load(EstimationResults.class, estimationNumber);
+            estimationResults = (EstimationResults) session.get(EstimationResults.class, estimationNumber);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Ошибка I/O", JOptionPane.OK_OPTION);
         } finally {
