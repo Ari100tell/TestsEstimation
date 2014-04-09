@@ -12,11 +12,11 @@
         </id>
 
         <property name="introducingResultDate" type="string">
-            <column name="INTRODUCING_RESULT_DATE" not-null="true"/>
+            <column name="INTRODUCING_RESULT_DATE"/>
         </property>
 
         <property name="totalBugs" type="java.lang.Integer">
-            <column name="TOTAL_BUGS" not-null="true"/>
+            <column name="TOTAL_BUGS"/>
         </property>
 
         <property name="totalUserEstimation" type="java.lang.Integer">
@@ -24,17 +24,17 @@
         </property>
 
         <property name="fundsSpentOnImplementation" type="java.lang.Integer">
-            <column name="FUNDS_SPENT_ON_IMPLEMENTATION" length="20" not-null="true" unique="true"/>
+            <column name="FUNDS_SPENT_ON_IMPLEMENTATION"/>
         </property>
 
-        <property name="stability" type="java.lang.Integer">
-            <column name="STABILITY" />
-        </property>
 
         <property name="preliminaryIncome" type="java.lang.Integer">
             <column name="PRELIMINARY_INCOME"/>
         </property>
 
+        <property name="stability" type="java.lang.Integer">
+            <column name="STABILITY" />
+        </property>
 
     </class>
 </hibernate-mapping>

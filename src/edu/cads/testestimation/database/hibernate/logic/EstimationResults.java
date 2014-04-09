@@ -3,19 +3,19 @@ package edu.cads.testestimation.database.hibernate.logic;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ESTIMATION_RESULTS")
-public class EstimationResults {
+public class EstimationResults implements Serializable {
     private Integer estimationNumber;
     private String estimationDate;
-    private String internalResultsNumber;
+    private Integer internalResultsNumber;
     private Integer introducingResultNumber;
-    private String implementationPlanNumber;
-    private int successProbability;
+    private Integer implementationPlanNumber;
+    private Integer successProbability;
     private Long expectedIncome;
     private boolean needIntroduction;
-
 
 
     @Id
@@ -41,11 +41,12 @@ public class EstimationResults {
     }
 
     @Column (name = "INTERNAL_RESULTS_NUMBER")
-    public String getInternalResultsNumber() {
+
+    public Integer getInternalResultsNumber() {
         return internalResultsNumber;
     }
 
-    public void setInternalResultsNumber(String internalResultsNumber) {
+    public void setInternalResultsNumber(Integer internalResultsNumber) {
         this.internalResultsNumber = internalResultsNumber;
     }
 
@@ -59,20 +60,21 @@ public class EstimationResults {
     }
 
     @Column(name = "IMPLEMENTATION_PLAN_NUMBER")
-    public String getImplementationPlanNumber() {
+
+    public Integer getImplementationPlanNumber() {
         return implementationPlanNumber;
     }
 
-    public void setImplementationPlanNumber(String name) {
-        this.implementationPlanNumber = name;
+    public void setImplementationPlanNumber(Integer implementationPlanNumber) {
+        this.implementationPlanNumber = implementationPlanNumber;
     }
 
     @Column(name = "SUCCESS_PROBABILITY")
-    public int getSuccessProbability() {
+    public Integer getSuccessProbability() {
         return successProbability;
     }
 
-    public void setSuccessProbability(int successProbability) {
+    public void setSuccessProbability(Integer successProbability) {
         this.successProbability = successProbability;
     }
 

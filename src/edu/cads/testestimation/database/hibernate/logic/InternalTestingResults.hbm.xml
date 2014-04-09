@@ -6,17 +6,22 @@
     <class name="edu.cads.testestimation.database.hibernate.logic.InternalTestingResults" table="INTERNAL_TESTING_RESULTS"
            catalog="logic">
 
-        <id name="internalResultDate" type="string">
-            <column name="INTERNAL_RESULTS_DATE"/>
+        <id name="internalResultNumber" type="java.lang.Integer">
+            <column name="INTERNAL_RESULTS_NUMBER"/>
             <generator class="increment"/>
         </id>
 
+
+        <property name="internalResultDate" type="string">
+            <column name="INTERNAL_RESULTS_DATE"/>
+        </property>
+
         <property name="systemTestingNumber" type="java.lang.Integer">
-            <column name="SYSTEM_TESTING_NUMBER" not-null="true"/>
+            <column name="SYSTEM_TESTING_NUMBER"/>
         </property>
 
         <property name="unitTestingNumber" type="java.lang.Integer">
-            <column name="UNIT_TESTING_NUMBER" not-null="true"/>
+            <column name="UNIT_TESTING_NUMBER" />
         </property>
 
         <property name="userRating" type="java.lang.Integer">
@@ -24,11 +29,11 @@
         </property>
 
         <property name="percentEfficiencySoftware" type="java.lang.Integer">
-            <column name="PERCENT_EFFICIENCY_SOFTWARE" length="20" not-null="true" unique="true"/>
+            <column name="PERCENT_EFFICIENCY_SOFTWARE"/>
         </property>
 
         <property name="fixesBugsPercent" type="java.lang.Integer">
-            <column name="FIXES_BUGS_PERCENT" not-null="false" unique="true"/>
+            <column name="FIXES_BUGS_PERCENT"/>
         </property>
 
         <property name="criticalStrikeChanceBug" type="java.lang.Integer">

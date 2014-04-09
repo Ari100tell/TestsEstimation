@@ -12,11 +12,11 @@
         </id>
 
         <property name="systemName" type="string">
-            <column name="SYSTEM_NAME" not-null="true"/>
+            <column name="SYSTEM_NAME"/>
         </property>
 
         <property name="totalBugs" type="java.lang.Integer">
-            <column name="TOTAL_BUGS" not-null="true"/>
+            <column name="TOTAL_BUGS"/>
         </property>
 
         <property name="totalBugFixes" type="java.lang.Integer">
@@ -24,30 +24,30 @@
         </property>
 
         <property name="testingData" type="string">
-            <column name="TESTING_DATA" length="20" not-null="true" unique="true"/>
+            <column name="TESTING_DATA"/>
         </property>
 
-        <property name="evaluationUsability" type="int">
+        <property name="evaluationUsability" type="java.lang.Integer">
             <column name="EVALUATION_USABILITY" />
         </property>
 
-        <property name="exerciseTestingEvaluation" type="int">
+        <property name="exerciseTestingEvaluation" type="java.lang.Integer">
             <column name="EXERCISE_TESTING_EVALUATION"/>
         </property>
 
-        <property name="evaluationUI" type="int">
+        <property name="evaluationUI" type="java.lang.Integer">
             <column name="EVALUATION_UI"/>
         </property>
 
-        <property name="evaluationCompatibility" type="int">
+        <property name="evaluationCompatibility" type="java.lang.Integer">
             <column name="EVALUATION_COMPATIBILITY"/>
         </property>
 
-        <property name="evaluationSafety" type="int">
+        <property name="evaluationSafety" type="java.lang.Integer">
             <column name="EVALUATION_SAFETY"/>
         </property>
 
-        <property name="evaluationPerformance" type="int">
+        <property name="evaluationPerformance" type="java.lang.Integer">
             <column name="EVALUATION_PERFORMANCE"/>
         </property>
 

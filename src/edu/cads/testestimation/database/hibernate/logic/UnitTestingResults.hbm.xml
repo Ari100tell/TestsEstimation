@@ -12,7 +12,7 @@
         </id>
 
         <property name="systemName" type="string">
-            <column name="SYSTEM_NAME" not-null="true"/>
+            <column name="SYSTEM_NAME"/>
         </property>
 
         <property name="totalBugs" type="java.lang.Integer">
@@ -39,8 +39,8 @@
             <column name="TOTAL_BUG_FIXES"/>
         </property>
 
-        <property name="testingData" type="string">
-            <column name="TESTING_DATA" length="20" not-null="true" unique="true"/>
+        <property name="testingDate" type="string">
+            <column name="TESTING_DATE" length="30" not-null="true" unique="true"/>
         </property>
     </class>
 </hibernate-mapping>

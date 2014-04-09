@@ -2,77 +2,94 @@ package edu.cads.testestimation.database.hibernate.logic;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-@Table(name = "INTERNAL_TESTING_RESULTS")
-public class SystemTestingResults {
-    @Id
-    @GeneratedValue(generator = "increment")
-    @GenericGenerator(name = "increment", strategy = "increment")
+@Table(name = "SYSTEM_TESTING_RESULTS")
+public class SystemTestingResults implements Serializable {
+
+
     private Integer systemTestingNumber;
     private String systemName;
     private Integer totalBugs;
     private Integer totalBugFixes;
     private String testingData;
-    private int evaluationUsability;
-    private int exerciseTestingEvaluation;
-    private int evaluationUI;
-    private int evaluationCompatibility;
-    private int evaluationSafety;
-    private int evaluationPerformance;
+    private Integer evaluationUsability;
+    private Integer exerciseTestingEvaluation;
+    private Integer evaluationUI;
+    private Integer evaluationCompatibility;
+    private Integer evaluationSafety;
+    private Integer evaluationPerformance;
 
-    public int getEvaluationPerformance() {
+
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
+     @Column(name = "SYSTEM_TESTING_NUMBER")
+    public Integer getSystemTestingNumber() {
+        return systemTestingNumber;
+    }
+
+    public void setSystemTestingNumber(Integer systemTestingNumber) {
+        this.systemTestingNumber = systemTestingNumber;
+    }
+
+    @Column(name = "EVALUATION_PERFORMANCE")
+    public Integer getEvaluationPerformance() {
         return evaluationPerformance;
     }
 
-    public void setEvaluationPerformance(int evaluationPerformance) {
+    public void setEvaluationPerformance(Integer evaluationPerformance) {
         this.evaluationPerformance = evaluationPerformance;
     }
 
-    public int getEvaluationSafety() {
+    @Column(name = "EVALUATION_SAFETY")
+    public Integer getEvaluationSafety() {
         return evaluationSafety;
     }
 
-    public void setEvaluationSafety(int evaluationSafety) {
+    public void setEvaluationSafety(Integer evaluationSafety) {
         this.evaluationSafety = evaluationSafety;
     }
 
-    public int getEvaluationCompatibility() {
+    @Column(name = "EVALUATION_COMPATIBILITY")
+    public Integer getEvaluationCompatibility() {
         return evaluationCompatibility;
     }
 
-    public void setEvaluationCompatibility(int evaluationCompatibility) {
+    public void setEvaluationCompatibility(Integer evaluationCompatibility) {
         this.evaluationCompatibility = evaluationCompatibility;
     }
 
-    public int getEvaluationUI() {
+    @Column(name = "EVALUATION_UI")
+    public Integer getEvaluationUI() {
         return evaluationUI;
     }
 
-    public void setEvaluationUI(int evaluationUI) {
+    public void setEvaluationUI(Integer evaluationUI) {
         this.evaluationUI = evaluationUI;
     }
 
-    public int getExerciseTestingEvaluation() {
+    @Column(name = "EXERCISE_TESTING_EVALUATION")
+    public Integer getExerciseTestingEvaluation() {
         return exerciseTestingEvaluation;
     }
 
-    public void setExerciseTestingEvaluation(int exerciseTestingEvalution) {
-        this.exerciseTestingEvaluation = exerciseTestingEvalution;
+    public void setExerciseTestingEvaluation(Integer exerciseTestingEvaluation) {
+        this.exerciseTestingEvaluation = exerciseTestingEvaluation;
     }
 
-    public int getEvaluationUsability() {
+    @Column(name = "EVALUATION_USABILITY")
+    public Integer getEvaluationUsability() {
         return evaluationUsability;
     }
 
-    public void setEvaluationUsability(int evaluationUsability) {
+    public void setEvaluationUsability(Integer evaluationUsability) {
         this.evaluationUsability = evaluationUsability;
     }
 
+    @Column(name = "TESTING_DATE")
     public String getTestingData() {
         return testingData;
     }
@@ -81,6 +98,7 @@ public class SystemTestingResults {
         this.testingData = testingData;
     }
 
+    @Column(name = "TOTAL_BUG_FIXES")
     public Integer getTotalBugFixes() {
         return totalBugFixes;
     }
@@ -89,6 +107,7 @@ public class SystemTestingResults {
         this.totalBugFixes = totalBugFixes;
     }
 
+    @Column(name = "TOTAL_BUGS")
     public Integer getTotalBugs() {
         return totalBugs;
     }
@@ -97,19 +116,12 @@ public class SystemTestingResults {
         this.totalBugs = totalBugs;
     }
 
+    @Column(name = "SYSTEM_NAME")
     public String getSystemName() {
         return systemName;
     }
 
     public void setSystemName(String systemName) {
         this.systemName = systemName;
-    }
-
-    public Integer getSystemTestingNumber() {
-        return systemTestingNumber;
-    }
-
-    public void setSystemTestingNumber(Integer systemTestingNumber) {
-        this.systemTestingNumber = systemTestingNumber;
     }
 }

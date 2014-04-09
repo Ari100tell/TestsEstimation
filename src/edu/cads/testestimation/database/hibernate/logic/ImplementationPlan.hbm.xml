@@ -12,31 +12,27 @@
         </id>
 
         <property name="implementationPlanName" type="string">
-            <column name="IMPLEMENTATION_PLAN_NAME" not-null="true"/>
+            <column name="IMPLEMENTATION_PLAN_NAME" />
         </property>
 
-        <property name="estimationDate" type="string">
-            <column name="IMPLEMENTATION_DATE" not-null="true"/>
+        <property name="implementationDate" type="string">
+            <column name="IMPLEMENTATION_DATE" />
         </property>
 
         <property name="expectedIncome" type="java.lang.Integer">
             <column name="EXPECTED_INCOME"/>
         </property>
 
-        <property name="stability" type="string">
-            <column name="STABILITY" length="20" not-null="true" unique="true"/>
+        <property name="stability" type="java.lang.Integer">
+            <column name="STABILITY"/>
         </property>
 
-        <property name="totalBugs" type="int">
-            <column name="TOTAL_BUGS" not-null="false" unique="true"/>
+        <property name="totalBugs" type="java.lang.Integer">
+            <column name="TOTAL_BUGS"/>
         </property>
 
-        <property name="totalUserEstimation" type="int">
+        <property name="totalUserEstimation" type="java.lang.Integer">
             <column name="TOTAL_USER_ESTIMATION"/>
-        </property>
-
-        <property name="expectedIncome" type="java.lang.Long">
-            <column name="EXPECTED_INCOME"/>
         </property>
 
     </class>

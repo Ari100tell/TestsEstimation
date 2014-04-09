@@ -1,15 +1,18 @@
 package edu.cads.testestimation.database.hibernate.logic;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "INTERNAL_TESTING_RESULTS")
 
 
-public class InternalTestingResults {
-    @Id
+public class InternalTestingResults implements Serializable{
+
+
+    private Integer internalResultNumber;
     private String internalResultDate;
     private Integer systemTestingNumber;
     private Integer unitTestingNumber;
@@ -19,15 +22,18 @@ public class InternalTestingResults {
     private Integer criticalStrikeChanceBug;
     private Integer availabilityMajorBugs;
 
-
-    public String getInternalResultDate() {
-        return internalResultDate;
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
+     @Column(name = "INTERNAL_RESULTS_NUMBER")
+    public Integer getInternalResultNumber() {
+        return internalResultNumber;
     }
 
-    public void setInternalResultDate(String internalResultDate) {
-        this.internalResultDate = internalResultDate;
+    public void setInternalResultNumber(Integer internalResultNumber) {
+        this.internalResultNumber = internalResultNumber;
     }
-
+    @Column(name = "AVAILABILITY_MAJOR_BUGS")
     public Integer getAvailabilityMajorBugs() {
         return availabilityMajorBugs;
     }
@@ -36,6 +42,7 @@ public class InternalTestingResults {
         this.availabilityMajorBugs = availabilityMajorBugs;
     }
 
+    @Column(name = "CRITICAL_STRIKE_CHANCE_BUG")
     public Integer getCriticalStrikeChanceBug() {
         return criticalStrikeChanceBug;
     }
@@ -44,6 +51,7 @@ public class InternalTestingResults {
         this.criticalStrikeChanceBug = criticalStrikeChanceBug;
     }
 
+    @Column(name = "FIXES_BUGS_PERCENT")
     public Integer getFixesBugsPercent() {
         return fixesBugsPercent;
     }
@@ -52,6 +60,7 @@ public class InternalTestingResults {
         this.fixesBugsPercent = fixesBugsPercent;
     }
 
+    @Column(name = "PERCENT_EFFICIENCY_SOFTWARE")
     public Integer getPercentEfficiencySoftware() {
         return percentEfficiencySoftware;
     }
@@ -60,6 +69,7 @@ public class InternalTestingResults {
         this.percentEfficiencySoftware = percentEfficiencySoftware;
     }
 
+    @Column(name = "USER_RATING")
     public Integer getUserRating() {
         return userRating;
     }
@@ -68,6 +78,7 @@ public class InternalTestingResults {
         this.userRating = userRating;
     }
 
+    @Column(name = "UNIT_TESTING_NUMBER")
     public Integer getUnitTestingNumber() {
         return unitTestingNumber;
     }
@@ -76,6 +87,7 @@ public class InternalTestingResults {
         this.unitTestingNumber = unitTestingNumber;
     }
 
+    @Column(name = "SYSTEM_TESTING_NUMBER")
     public Integer getSystemTestingNumber() {
         return systemTestingNumber;
     }
@@ -84,5 +96,12 @@ public class InternalTestingResults {
         this.systemTestingNumber = systemTestingNumber;
     }
 
+    @Column(name = "INTERNAL_RESULTS_DATE")
+    public String getInternalResultDate() {
+        return internalResultDate;
+    }
 
+    public void setInternalResultDate(String internalResultDate) {
+        this.internalResultDate = internalResultDate;
+    }
 }

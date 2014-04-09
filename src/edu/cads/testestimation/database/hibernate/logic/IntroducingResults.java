@@ -2,31 +2,44 @@ package edu.cads.testestimation.database.hibernate.logic;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-/**
- * Created by Ari100tell on 16.03.2014.
- */
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "INTRODUCING_RESULTS")
-public class IntroducingResults {
+public class IntroducingResults implements Serializable {
 
-    @Id
-    @GeneratedValue(generator = "increment")
-    @GenericGenerator(name = "increment", strategy = "increment")
 
     private Integer introducingResultNumber;
     private String introducingResultDate;
     private Integer totalBugs;
     private Integer totalUserEstimation;
     private Integer fundsSpentOnImplementation;
-    private Integer stability;
     private Integer preliminaryIncome;
+    private Integer stability;
 
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
+    @Column(name = "INTRODUCING_RESULT_NUMBER")
+    public Integer getIntroducingResultNumber() {
+        return introducingResultNumber;
+    }
+
+    public void setIntroducingResultNumber(Integer introducingResultNumber) {
+        this.introducingResultNumber = introducingResultNumber;
+    }
+
+    @Column(name = "STABILITY")
+    public Integer getStability() {
+        return stability;
+    }
+
+    public void setStability(Integer stability) {
+        this.stability = stability;
+    }
+
+    @Column(name = "PRELIMINARY_INCOME")
     public Integer getPreliminaryIncome() {
         return preliminaryIncome;
     }
@@ -35,14 +48,7 @@ public class IntroducingResults {
         this.preliminaryIncome = preliminaryIncome;
     }
 
-    public int getStability() {
-        return stability;
-    }
-
-    public void setStability(int stability) {
-        this.stability = stability;
-    }
-
+    @Column(name = "FUNDS_SPENT_ON_IMPLEMENTATION")
     public Integer getFundsSpentOnImplementation() {
         return fundsSpentOnImplementation;
     }
@@ -51,14 +57,16 @@ public class IntroducingResults {
         this.fundsSpentOnImplementation = fundsSpentOnImplementation;
     }
 
-    public int getTotalUserEstimation() {
+    @Column(name = "TOTAL_USER_ESTIMATION")
+    public Integer getTotalUserEstimation() {
         return totalUserEstimation;
     }
 
-    public void setTotalUserEstimation(int totalUserEstimation) {
+    public void setTotalUserEstimation(Integer totalUserEstimation) {
         this.totalUserEstimation = totalUserEstimation;
     }
 
+    @Column(name = "TOTAL_BUGS")
     public Integer getTotalBugs() {
         return totalBugs;
     }
@@ -67,19 +75,12 @@ public class IntroducingResults {
         this.totalBugs = totalBugs;
     }
 
+    @Column(name = "INTRODUCING_RESULT_DATE")
     public String getIntroducingResultDate() {
         return introducingResultDate;
     }
 
     public void setIntroducingResultDate(String introducingResultDate) {
         this.introducingResultDate = introducingResultDate;
-    }
-
-    public Integer getIntroducingResultNumber() {
-        return introducingResultNumber;
-    }
-
-    public void setIntroducingResultNumber(Integer introducingResultNumber) {
-        this.introducingResultNumber = introducingResultNumber;
     }
 }
