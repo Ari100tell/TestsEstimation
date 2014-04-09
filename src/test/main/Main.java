@@ -31,5 +31,8 @@ public class Main {
             System.out.println("Имя студента : " + studs.get(i).getName() + ", Возраст : " + studs.get(i).getAge() +",  id : " + studs.get(i).getId());
             System.out.println("=============================");
         }
+        Student student = Factory.getInstance().getStudentDAO().getStudentById(1l);
+        System.out.println(student.getAge());
+
     }
 }
