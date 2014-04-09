@@ -7,12 +7,27 @@
 package edu.cads.testestimation.userinterface;
 
 
+import edu.cads.testestimation.database.hibernate.DAO.factory.EstimationResultFactory;
+import edu.cads.testestimation.database.hibernate.DAO.factory.ImplementationPlanFactory;
+import edu.cads.testestimation.database.hibernate.DAO.factory.IntroducingResultsFactory;
+import edu.cads.testestimation.database.hibernate.DAO.factory.SystemTestingResultsFactory;
+import edu.cads.testestimation.database.hibernate.DAO.factory.UnitTestingResultsFactory;
+import edu.cads.testestimation.database.hibernate.logic.EstimationResults;
+import edu.cads.testestimation.database.hibernate.logic.ImplementationPlan;
+import edu.cads.testestimation.database.hibernate.logic.IntroducingResults;
+import edu.cads.testestimation.database.hibernate.logic.SystemTestingResults;
+import edu.cads.testestimation.database.hibernate.logic.UnitTestingResults;
+import edu.cads.testestimation.database.hibernate.util.HibernateUtil;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.attribute.HashPrintRequestAttributeSet;
@@ -20,6 +35,9 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.*;
 import javax.swing.text.DefaultFormatter;
 import javax.swing.text.MaskFormatter;
+import org.hibernate.Session;
+import org.hibernate.exception.ConstraintViolationException;
+import sun.util.calendar.BaseCalendar.Date;
 
 /**
  *
@@ -27,6 +45,9 @@ import javax.swing.text.MaskFormatter;
  */
 public class TestEstimationFrame extends javax.swing.JFrame {
 private String directoryName = System.getProperty("user.dir");
+    private Integer internalResultsNumber;
+    private Integer introducingResultNumber;
+    private Integer implementationPlanNumber;
     /**
      * Creates new form TestEstimationFrame
      */
@@ -45,6 +66,7 @@ private String directoryName = System.getProperty("user.dir");
 
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        jRadioButtonMenuItem1 = new javax.swing.JRadioButtonMenuItem();
         jLabelStatusBar = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jTextFieldSystemName = new javax.swing.JTextField();
@@ -54,9 +76,9 @@ private String directoryName = System.getProperty("user.dir");
         jspinnerNumberResult = new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100000,1));
         jLabel9 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
-        jTextField9 = new javax.swing.JTextField();
+        jTextFieldSystemTotalBugs = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
-        jTextField11 = new javax.swing.JTextField();
+        jTextFieldSystemTotalBugFixes = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
@@ -66,51 +88,51 @@ private String directoryName = System.getProperty("user.dir");
         MaskFormatter formatter3 = null;
         try {
             formatter3 = new MaskFormatter("##.#%");
-            formatter3.setPlaceholderCharacter('_');
+            formatter3.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
-        jFormattedTextField1 = new javax.swing.JFormattedTextField(formatter3);
+        jFormattedTextFieldEvaluationUI = new javax.swing.JFormattedTextField(formatter3);
         MaskFormatter formatter2 = null;
         try {
             formatter2 = new MaskFormatter("##.#%");
-            formatter2.setPlaceholderCharacter('_');
+            formatter2.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
-        jFormattedTextField2 = new javax.swing.JFormattedTextField(formatter2);
+        jFormattedTextFieldExerciseTestingEvaluation = new javax.swing.JFormattedTextField(formatter2);
         MaskFormatter formatter5 = null;
         try {
             formatter5 = new MaskFormatter("##.#%");
-            formatter5.setPlaceholderCharacter('_');
+            formatter5.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
-        jFormattedTextField3 = new javax.swing.JFormattedTextField(formatter5);
+        jFormattedTextFieldEvaluationSafety = new javax.swing.JFormattedTextField(formatter5);
         MaskFormatter formatter4 = null;
         try {
             formatter4 = new MaskFormatter("##.#%");
-            formatter4.setPlaceholderCharacter('_');
+            formatter4.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
-        jFormattedTextField4 = new javax.swing.JFormattedTextField(formatter4);
+        jFormattedTextFieldEvaluationCompatibility = new javax.swing.JFormattedTextField(formatter4);
         MaskFormatter formatter1 = null;
         try {
             formatter1 = new MaskFormatter("##.#%");
-            formatter1.setPlaceholderCharacter('_');
+            formatter1.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
-        jFormattedTextField5 = new javax.swing.JFormattedTextField(formatter1);
+        jFormattedTextFieldSystemEvaluationUsability = new javax.swing.JFormattedTextField(formatter1);
         MaskFormatter formatter6 = null;
         try {
             formatter6 = new MaskFormatter("##.#%");
-            formatter6.setPlaceholderCharacter('_');
+            formatter6.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
-        jFormattedTextField6 = new javax.swing.JFormattedTextField(formatter6);
+        jFormattedTextFieldEvaluationPerformance = new javax.swing.JFormattedTextField(formatter6);
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -119,27 +141,29 @@ private String directoryName = System.getProperty("user.dir");
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
-        jTextField7 = new javax.swing.JTextField();
+        jTextFieldUnitTotalBugs = new javax.swing.JTextField();
+        jTextFieldMockObjectNumber = new javax.swing.JTextField();
+        jTextFieldUnitTotalBugFixes = new javax.swing.JTextField();
         jSpinnerModalResultNumber = new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100000,1));
         MaskFormatter formatter10 = null;
         try {
             formatter10 = new MaskFormatter("##.#%");
-            formatter10.setPlaceholderCharacter('_');
+            formatter10.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
-        jFormattedTextField9 = new javax.swing.JFormattedTextField(formatter10);
+        jFormattedTextFieldEvaluationRegressionTesting = new javax.swing.JFormattedTextField(formatter10);
         MaskFormatter formatter11 = null;
         try {
             formatter11 = new MaskFormatter("##.#%");
-            formatter11.setPlaceholderCharacter('_');
+            formatter11.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
-        jFormattedTextField10 = new javax.swing.JFormattedTextField(formatter11);
+        jFormattedTextFieldCoverRatioUnitTests = new javax.swing.JFormattedTextField(formatter11);
         jDateChooser4 = new com.toedter.calendar.JDateChooser();
+        jLabel36 = new javax.swing.JLabel();
+        jTextFieldReportedBugsNumber = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel19 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
@@ -154,7 +178,7 @@ private String directoryName = System.getProperty("user.dir");
         MaskFormatter formatter12 = null;
         try {
             formatter12 = new MaskFormatter("##.#%");
-            formatter12.setPlaceholderCharacter('_');
+            formatter12.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
@@ -162,7 +186,7 @@ private String directoryName = System.getProperty("user.dir");
         MaskFormatter formatter13 = null;
         try {
             formatter13 = new MaskFormatter("##.#%");
-            formatter13.setPlaceholderCharacter('_');
+            formatter13.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
@@ -170,7 +194,7 @@ private String directoryName = System.getProperty("user.dir");
         MaskFormatter formatter14 = null;
         try {
             formatter14 = new MaskFormatter("##.#%");
-            formatter14.setPlaceholderCharacter('_');
+            formatter14.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
@@ -178,44 +202,53 @@ private String directoryName = System.getProperty("user.dir");
         jDateChooser5 = new com.toedter.calendar.JDateChooser();
         jPanel2 = new javax.swing.JPanel();
         jLabel27 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        jTextFieldImplementationPlanName = new javax.swing.JTextField();
         jLabel30 = new javax.swing.JLabel();
         jLabel31 = new javax.swing.JLabel();
         jLabel32 = new javax.swing.JLabel();
-        jTextField28 = new javax.swing.JTextField();
+        jTextFieldImplementationPlanExpectedIncome = new javax.swing.JTextField();
         jLabel33 = new javax.swing.JLabel();
-        jTextField29 = new javax.swing.JTextField();
+        jTextFieldImplementationPlanTotalBugs = new javax.swing.JTextField();
         jLabel34 = new javax.swing.JLabel();
         MaskFormatter formatter7 = null;
         try {
             formatter7 = new MaskFormatter("v. ##.##");
-            formatter7.setPlaceholderCharacter('_');
+            formatter7.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
-        jFormattedTextField7 = new javax.swing.JFormattedTextField(formatter7);
+        jFormattedTextFieldImplementationPlanNumber = new javax.swing.JFormattedTextField(formatter7);
         MaskFormatter formatter9 = null;
         try {
             formatter9 = new MaskFormatter("##.#%");
-            formatter9.setPlaceholderCharacter('_');
+            formatter9.setPlaceholderCharacter('0');
         } catch (java.text.ParseException exc) {
             // требуется ручное исключение
         }
-        jFormattedTextField8 = new javax.swing.JFormattedTextField(formatter9);
-        jDateChooser3 = new com.toedter.calendar.JDateChooser();
+        jFormattedTextFieldTotalUserEstimation = new javax.swing.JFormattedTextField(formatter9);
+        jDateChooserImplementationDate = new com.toedter.calendar.JDateChooser();
+        jLabel37 = new javax.swing.JLabel();
+        MaskFormatter formatterStability = null;
+        try {
+            formatterStability = new MaskFormatter("##.#%");
+            formatterStability.setPlaceholderCharacter('0');
+        } catch (java.text.ParseException exc) {
+            // требуется ручное исключение
+        }
+        jFormattedTextFieldImplementationPlanStability = new javax.swing.JFormattedTextField(formatterStability);
         jPanel7 = new javax.swing.JPanel();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel4 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
-        jLabel28 = new javax.swing.JLabel();
-        jLabel29 = new javax.swing.JLabel();
+        jLabelSuccessProbability = new javax.swing.JLabel();
+        jLabelExpectedIncome = new javax.swing.JLabel();
         jLabel35 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField10 = new javax.swing.JTextField();
+        jTextFieldEstimationDate = new javax.swing.JTextField();
+        jTextFieldExpectedIncome = new javax.swing.JTextField();
         jTextField12 = new javax.swing.JTextField();
-        jFormattedTextField14 = new javax.swing.JFormattedTextField();
+        jFormattedTextFieldSuccessProbability = new javax.swing.JFormattedTextField();
         jProgressBar1 = new javax.swing.JProgressBar(0,0,100);
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 32767));
         jComboBox1 = new javax.swing.JComboBox();
@@ -250,8 +283,9 @@ private String directoryName = System.getProperty("user.dir");
         jMenu23 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
-        jSeparator7 = new javax.swing.JPopupMenu.Separator();
         jMenuItem4 = new javax.swing.JMenuItem();
+        jSeparator7 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem6 = new javax.swing.JMenuItem();
         jMenu22 = new javax.swing.JMenu();
         jMenuItem22 = new javax.swing.JMenuItem();
         jMenuItem17 = new javax.swing.JMenuItem();
@@ -262,12 +296,14 @@ private String directoryName = System.getProperty("user.dir");
         jMenu17 = new javax.swing.JMenu();
         jMenu29 = new javax.swing.JMenu();
         jMenuItem23 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem24 = new javax.swing.JMenuItem();
         jMenu28 = new javax.swing.JMenu();
-        jMenuItem25 = new javax.swing.JMenuItem();
+        jMenuItemViewSystemTestingResults = new javax.swing.JMenuItem();
         jMenuItem28 = new javax.swing.JMenuItem();
         jMenuItem26 = new javax.swing.JMenuItem();
         jSeparator13 = new javax.swing.JPopupMenu.Separator();
+        jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jMenuItemViewOptions = new javax.swing.JMenuItem();
         jMenuResult = new javax.swing.JMenu();
         jMenuItemCalculate = new javax.swing.JMenuItem();
@@ -286,6 +322,9 @@ private String directoryName = System.getProperty("user.dir");
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItemAboutProgram = new javax.swing.JMenuItem();
 
+        jRadioButtonMenuItem1.setSelected(true);
+        jRadioButtonMenuItem1.setText("jRadioButtonMenuItem1");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabelStatusBar.setText("Рядок стану");
@@ -293,7 +332,7 @@ private String directoryName = System.getProperty("user.dir");
 
         jLabel2.setText("Назва тестуємої системи");
 
-        jTextFieldSystemName.setDocument(new JTextFieldFilter(JTextFieldFilter.ALPHA));
+        jTextFieldSystemName.setDocument(new JTextFieldFilter(JTextFieldFilter.ALPHA_NUMERIC));
         jTextFieldSystemName.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         jPanel6.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -312,16 +351,16 @@ private String directoryName = System.getProperty("user.dir");
 
         JTextFieldFilter jTextFieldFilter = new JTextFieldFilter(JTextFieldFilter.NUMERIC);
         jTextFieldFilter.setLimitLength(5);
-        jTextField9.setDocument(jTextFieldFilter);
-        jTextField9.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jTextFieldSystemTotalBugs.setDocument(jTextFieldFilter);
+        jTextFieldSystemTotalBugs.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         jLabel12.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jLabel12.setText("Кількість виправлених багів");
 
         JTextFieldFilter jTextFieldFilter1 = new JTextFieldFilter(JTextFieldFilter.NUMERIC);
         jTextFieldFilter1.setLimitLength(5);
-        jTextField11.setDocument(jTextFieldFilter1);
-        jTextField11.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jTextFieldSystemTotalBugFixes.setDocument(jTextFieldFilter1);
+        jTextFieldSystemTotalBugFixes.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         jLabel13.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jLabel13.setText("Оцінка юзабіліті");
@@ -341,23 +380,23 @@ private String directoryName = System.getProperty("user.dir");
         jLabel18.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jLabel18.setText("Оцінка продуктивності");
 
-        jFormattedTextField1.setText("jFormattedTextField1");
-        jFormattedTextField1.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jFormattedTextFieldEvaluationUI.setText("jFormattedTextField1");
+        jFormattedTextFieldEvaluationUI.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
-        jFormattedTextField2.setText("jFormattedTextField1");
-        jFormattedTextField2.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jFormattedTextFieldExerciseTestingEvaluation.setText("jFormattedTextField1");
+        jFormattedTextFieldExerciseTestingEvaluation.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
-        jFormattedTextField3.setText("jFormattedTextField1");
-        jFormattedTextField3.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jFormattedTextFieldEvaluationSafety.setText("jFormattedTextField1");
+        jFormattedTextFieldEvaluationSafety.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
-        jFormattedTextField4.setText("jFormattedTextField1");
-        jFormattedTextField4.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jFormattedTextFieldEvaluationCompatibility.setText("jFormattedTextField1");
+        jFormattedTextFieldEvaluationCompatibility.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
-        jFormattedTextField5.setText("jFormattedTextField1");
-        jFormattedTextField5.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jFormattedTextFieldSystemEvaluationUsability.setText("jFormattedTextField1");
+        jFormattedTextFieldSystemEvaluationUsability.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
-        jFormattedTextField6.setText("jFormattedTextField1");
-        jFormattedTextField6.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jFormattedTextFieldEvaluationPerformance.setText("jFormattedTextField1");
+        jFormattedTextFieldEvaluationPerformance.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -377,15 +416,15 @@ private String directoryName = System.getProperty("user.dir");
                     .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jFormattedTextField6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
-                    .addComponent(jFormattedTextField3)
-                    .addComponent(jFormattedTextField4)
-                    .addComponent(jFormattedTextField1)
-                    .addComponent(jFormattedTextField2)
-                    .addComponent(jTextField11)
+                    .addComponent(jFormattedTextFieldEvaluationPerformance, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
+                    .addComponent(jFormattedTextFieldEvaluationSafety)
+                    .addComponent(jFormattedTextFieldEvaluationCompatibility)
+                    .addComponent(jFormattedTextFieldEvaluationUI)
+                    .addComponent(jFormattedTextFieldExerciseTestingEvaluation)
+                    .addComponent(jTextFieldSystemTotalBugFixes)
                     .addComponent(jspinnerNumberResult)
-                    .addComponent(jTextField9)
-                    .addComponent(jFormattedTextField5))
+                    .addComponent(jTextFieldSystemTotalBugs)
+                    .addComponent(jFormattedTextFieldSystemEvaluationUsability))
                 .addContainerGap(90, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
@@ -398,35 +437,35 @@ private String directoryName = System.getProperty("user.dir");
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
-                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldSystemTotalBugs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel12)
-                    .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldSystemTotalBugFixes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
-                    .addComponent(jFormattedTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jFormattedTextFieldSystemEvaluationUsability, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
-                    .addComponent(jFormattedTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jFormattedTextFieldExerciseTestingEvaluation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel15)
-                    .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jFormattedTextFieldEvaluationUI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jFormattedTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFormattedTextFieldEvaluationCompatibility, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel16))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel17)
-                    .addComponent(jFormattedTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jFormattedTextFieldEvaluationSafety, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel18)
-                    .addComponent(jFormattedTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jFormattedTextFieldEvaluationPerformance, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(42, Short.MAX_VALUE))
         );
 
@@ -457,18 +496,18 @@ private String directoryName = System.getProperty("user.dir");
 
         JTextFieldFilter jTextFieldFilter3 = new JTextFieldFilter(JTextFieldFilter.NUMERIC);
         jTextFieldFilter3.setLimitLength(5);
-        jTextField3.setDocument(jTextFieldFilter3);
-        jTextField3.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jTextFieldUnitTotalBugs.setDocument(jTextFieldFilter3);
+        jTextFieldUnitTotalBugs.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         JTextFieldFilter jTextFieldFilter8 = new JTextFieldFilter(JTextFieldFilter.NUMERIC);
         jTextFieldFilter8.setLimitLength(4);
-        jTextField5.setDocument(jTextFieldFilter8);
-        jTextField5.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jTextFieldMockObjectNumber.setDocument(jTextFieldFilter8);
+        jTextFieldMockObjectNumber.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         JTextFieldFilter jTextFieldFilter2 = new JTextFieldFilter(JTextFieldFilter.NUMERIC);
         jTextFieldFilter2.setLimitLength(9);
-        jTextField7.setDocument(jTextFieldFilter2);
-        jTextField7.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jTextFieldUnitTotalBugFixes.setDocument(jTextFieldFilter2);
+        jTextFieldUnitTotalBugFixes.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         JSpinner.NumberEditor jsEditorModalResult = (JSpinner.NumberEditor)jSpinnerModalResultNumber.getEditor();
         DefaultFormatter formatterModalResult = (DefaultFormatter) jsEditorModalResult.getTextField().getFormatter();
@@ -477,18 +516,27 @@ private String directoryName = System.getProperty("user.dir");
         jSpinnerModalResultNumber.setEditor(new javax.swing.JSpinner.NumberEditor(jSpinnerModalResultNumber, ""));
         jSpinnerModalResultNumber.setRequestFocusEnabled(false);
 
-        jFormattedTextField9.setText("jFormattedTextField9");
-        jFormattedTextField9.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
-        jFormattedTextField9.addActionListener(new java.awt.event.ActionListener() {
+        jFormattedTextFieldEvaluationRegressionTesting.setText("jFormattedTextField9");
+        jFormattedTextFieldEvaluationRegressionTesting.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jFormattedTextFieldEvaluationRegressionTesting.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jFormattedTextField9ActionPerformed(evt);
+                jFormattedTextFieldEvaluationRegressionTestingActionPerformed(evt);
             }
         });
 
-        jFormattedTextField10.setText("jFormattedTextField10");
-        jFormattedTextField10.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jFormattedTextFieldCoverRatioUnitTests.setText("jFormattedTextField10");
+        jFormattedTextFieldCoverRatioUnitTests.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
+        jDateChooser4.getDateEditor().setEnabled(false);
         jDateChooser4.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+
+        jLabel36.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jLabel36.setText("Кількість заведених багів");
+
+        JTextFieldFilter jTextFieldFilte = new JTextFieldFilter(JTextFieldFilter.NUMERIC);
+        jTextFieldFilter2.setLimitLength(9);
+        jTextFieldReportedBugsNumber.setDocument(jTextFieldFilte);
+        jTextFieldReportedBugsNumber.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -503,16 +551,18 @@ private String directoryName = System.getProperty("user.dir");
                     .addComponent(jLabel6)
                     .addComponent(jLabel7)
                     .addComponent(jLabel8)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel36))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jFormattedTextField9)
-                    .addComponent(jFormattedTextField10)
-                    .addComponent(jSpinnerModalResultNumber)
-                    .addComponent(jDateChooser4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.LEADING))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jTextFieldReportedBugsNumber)
+                    .addComponent(jTextFieldUnitTotalBugFixes, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                    .addComponent(jTextFieldMockObjectNumber)
+                    .addComponent(jFormattedTextFieldEvaluationRegressionTesting, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jFormattedTextFieldCoverRatioUnitTests, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSpinnerModalResultNumber, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jDateChooser4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTextFieldUnitTotalBugs))
                 .addContainerGap(91, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -525,28 +575,32 @@ private String directoryName = System.getProperty("user.dir");
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldUnitTotalBugs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jFormattedTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jFormattedTextFieldEvaluationRegressionTesting, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldMockObjectNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jFormattedTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jFormattedTextFieldCoverRatioUnitTests, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel8)
-                    .addComponent(jDateChooser4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(104, Short.MAX_VALUE))
+                    .addComponent(jTextFieldUnitTotalBugFixes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel36)
+                    .addComponent(jTextFieldReportedBugsNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(8, 8, 8)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jDateChooser4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8))
+                .addContainerGap(81, Short.MAX_VALUE))
         );
 
         jTabbedPaneDate.addTab("Дані модульного тестування", jPanel1);
@@ -597,6 +651,7 @@ private String directoryName = System.getProperty("user.dir");
         jFormattedTextField13.setText("jFormattedTextField11");
         jFormattedTextField13.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
+        jDateChooser5.getDateEditor().setEnabled(false);
         jDateChooser5.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -604,26 +659,30 @@ private String directoryName = System.getProperty("user.dir");
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(68, 68, 68)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel26, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jLabel25, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel24, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
-                        .addComponent(jLabel23, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel21, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel20, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel19, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jFormattedTextField12, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
-                    .addComponent(jFormattedTextField11, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jFormattedTextField13, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField20, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jDateChooser5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField25))
-                .addContainerGap(89, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jDateChooser5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jFormattedTextField12, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
+                            .addComponent(jFormattedTextField11, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jFormattedTextField13, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField20, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField25)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(68, 287, Short.MAX_VALUE)
+                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(90, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -632,11 +691,7 @@ private String directoryName = System.getProperty("user.dir");
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel19)
                     .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel20)
-                    .addComponent(jDateChooser5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel21)
                     .addComponent(jTextField20, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -656,7 +711,11 @@ private String directoryName = System.getProperty("user.dir");
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel26)
                     .addComponent(jTextField25, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(104, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel20)
+                    .addComponent(jDateChooser5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(114, Short.MAX_VALUE))
         );
 
         jTabbedPaneDate.addTab("Дані впровадження", jPanel3);
@@ -664,11 +723,11 @@ private String directoryName = System.getProperty("user.dir");
         jLabel27.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jLabel27.setText("Назва");
 
-        jTextField1.setDocument(new JTextFieldFilter(JTextFieldFilter.ALPHA));
-        jTextField1.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jTextFieldImplementationPlanName.setDocument(new JTextFieldFilter(JTextFieldFilter.ALPHA_NUMERIC));
+        jTextFieldImplementationPlanName.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         jLabel30.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
-        jLabel30.setText("Версія");
+        jLabel30.setText("Номер плану впровадження");
 
         jLabel31.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jLabel31.setText("Дата впровадження");
@@ -678,27 +737,33 @@ private String directoryName = System.getProperty("user.dir");
 
         JTextFieldFilter jTextFieldFilter4 = new JTextFieldFilter(JTextFieldFilter.NUMERIC);
         jTextFieldFilter4.setLimitLength(9);
-        jTextField28.setDocument(jTextFieldFilter4);
-        jTextField28.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jTextFieldImplementationPlanExpectedIncome.setDocument(jTextFieldFilter4);
+        jTextFieldImplementationPlanExpectedIncome.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         jLabel33.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jLabel33.setText("Загальна кількість багів");
 
         JTextFieldFilter jTextFieldFilter6 = new JTextFieldFilter(JTextFieldFilter.NUMERIC);
         jTextFieldFilter6.setLimitLength(9);
-        jTextField29.setDocument(jTextFieldFilter6);
-        jTextField29.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jTextFieldImplementationPlanTotalBugs.setDocument(jTextFieldFilter6);
+        jTextFieldImplementationPlanTotalBugs.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         jLabel34.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jLabel34.setText("Загальна оцінка користувачів");
 
-        jFormattedTextField7.setText("jFormattedTextField7");
-        jFormattedTextField7.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jFormattedTextFieldImplementationPlanNumber.setText("jFormattedTextField7");
+        jFormattedTextFieldImplementationPlanNumber.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
-        jFormattedTextField8.setText("jFormattedTextField8");
-        jFormattedTextField8.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jFormattedTextFieldTotalUserEstimation.setText("jFormattedTextField8");
+        jFormattedTextFieldTotalUserEstimation.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
-        jDateChooser3.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jDateChooserImplementationDate.getDateEditor().setEnabled(false);
+        jDateChooserImplementationDate.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+
+        jLabel37.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jLabel37.setText("Оцінка стабільності");
+
+        jFormattedTextFieldImplementationPlanStability.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -706,52 +771,62 @@ private String directoryName = System.getProperty("user.dir");
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(68, 68, 68)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jLabel30, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel32, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel33, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel34, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE))
-                    .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jFormattedTextField7, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
-                    .addComponent(jTextField1)
-                    .addComponent(jDateChooser3, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField28, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField29)
-                    .addComponent(jFormattedTextField8, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE))
-                .addContainerGap(87, Short.MAX_VALUE))
+                    .addComponent(jLabel37, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel30, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel32, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel33, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel34, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
+                    .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel31, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jFormattedTextFieldImplementationPlanNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                    .addComponent(jTextFieldImplementationPlanName)
+                    .addComponent(jDateChooserImplementationDate, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldImplementationPlanExpectedIncome, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldImplementationPlanTotalBugs)
+                    .addComponent(jFormattedTextFieldTotalUserEstimation, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                    .addComponent(jFormattedTextFieldImplementationPlanStability, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE))
+                .addContainerGap(81, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(43, Short.MAX_VALUE)
+                .addContainerGap(45, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel27)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldImplementationPlanName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel30)
-                    .addComponent(jFormattedTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel31)
-                    .addComponent(jDateChooser3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jFormattedTextFieldImplementationPlanNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel32)
-                    .addComponent(jTextField28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldImplementationPlanExpectedIncome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(9, 9, 9)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel37)
+                    .addComponent(jFormattedTextFieldImplementationPlanStability, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel33)
-                    .addComponent(jTextField29, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addComponent(jLabel34))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextFieldImplementationPlanTotalBugs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel33))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jFormattedTextFieldTotalUserEstimation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel34)
-                    .addComponent(jFormattedTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(135, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(2, 2, 2)
+                        .addComponent(jLabel31))
+                    .addComponent(jDateChooserImplementationDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(97, Short.MAX_VALUE))
         );
 
         jTabbedPaneDate.addTab("План впровадження", jPanel2);
@@ -767,7 +842,7 @@ private String directoryName = System.getProperty("user.dir");
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTabbedPaneDate, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addContainerGap())
@@ -779,26 +854,31 @@ private String directoryName = System.getProperty("user.dir");
         jLabel10.setText("Номер");
 
         jLabel22.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
-        jLabel22.setText("Дата і час оцінювання");
+        jLabel22.setText("Дата оцінювання");
 
-        jLabel28.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
-        jLabel28.setText("<html>Імовірність успішного <br>\nвпровадження</html>");
+        jLabelSuccessProbability.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jLabelSuccessProbability.setText("<html>Імовірність успішного <br>\nвпровадження</html>");
 
-        jLabel29.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
-        jLabel29.setText("Очікуваний прибуток");
+        jLabelExpectedIncome.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jLabelExpectedIncome.setText("Очікуваний прибуток");
 
         jLabel35.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jLabel35.setText("Потреба впровадження");
 
         jTextField2.setEditable(false);
 
-        jTextField4.setEditable(false);
+        jTextFieldEstimationDate.setEditable(false);
 
-        jTextField10.setEditable(false);
+        jTextFieldExpectedIncome.setEditable(false);
 
         jTextField12.setEditable(false);
 
-        jFormattedTextField14.setEnabled(false);
+        jFormattedTextFieldSuccessProbability.setEnabled(false);
+        jFormattedTextFieldSuccessProbability.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jFormattedTextFieldSuccessProbabilityActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -807,19 +887,19 @@ private String directoryName = System.getProperty("user.dir");
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(68, 68, 68)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelSuccessProbability, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel22)
                     .addComponent(jLabel10)
-                    .addComponent(jLabel29)
+                    .addComponent(jLabelExpectedIncome)
                     .addComponent(jLabel35))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jTextField2)
                     .addComponent(jTextField12)
-                    .addComponent(jTextField10)
-                    .addComponent(jTextField4)
-                    .addComponent(jFormattedTextField14, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
-                .addContainerGap(43, Short.MAX_VALUE))
+                    .addComponent(jTextFieldExpectedIncome)
+                    .addComponent(jTextFieldEstimationDate)
+                    .addComponent(jFormattedTextFieldSuccessProbability, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -831,15 +911,15 @@ private String directoryName = System.getProperty("user.dir");
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel22)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldEstimationDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jFormattedTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabelSuccessProbability, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFormattedTextFieldSuccessProbability, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel29)
-                    .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabelExpectedIncome)
+                    .addComponent(jTextFieldExpectedIncome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel35)
@@ -1041,7 +1121,7 @@ private String directoryName = System.getProperty("user.dir");
 
         jMenu23.setText("Плани впровадження");
 
-        jMenuItem3.setText("Додати");
+        jMenuItem3.setText("Записати");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem3ActionPerformed(evt);
@@ -1056,7 +1136,6 @@ private String directoryName = System.getProperty("user.dir");
             }
         });
         jMenu23.add(jMenuItem5);
-        jMenu23.add(jSeparator7);
 
         jMenuItem4.setText("Видалити поточний план");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
@@ -1065,6 +1144,15 @@ private String directoryName = System.getProperty("user.dir");
             }
         });
         jMenu23.add(jMenuItem4);
+        jMenu23.add(jSeparator7);
+
+        jMenuItem6.setText("Переглянути");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
+        jMenu23.add(jMenuItem6);
 
         jMenuData.add(jMenu23);
 
@@ -1082,11 +1170,16 @@ private String directoryName = System.getProperty("user.dir");
         jMenu22.add(jMenuItem17);
         jMenu22.add(jSeparator8);
 
-        jMenuItem20.setText("Оцінити");
+        jMenuItem20.setText("Переглянути");
+        jMenuItem20.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem20ActionPerformed(evt);
+            }
+        });
         jMenu22.add(jMenuItem20);
         jMenu22.add(jSeparator9);
 
-        jMenuItem1.setText("Редагувати");
+        jMenuItem1.setText("Записати");
         jMenu22.add(jMenuItem1);
 
         jMenuData.add(jMenu22);
@@ -1096,7 +1189,20 @@ private String directoryName = System.getProperty("user.dir");
         jMenu29.setText("Модульне тестування");
 
         jMenuItem23.setText("Переглянути");
+        jMenuItem23.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem23ActionPerformed(evt);
+            }
+        });
         jMenu29.add(jMenuItem23);
+
+        jMenuItem7.setText("Записати");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
+        jMenu29.add(jMenuItem7);
 
         jMenuItem24.setText("Очистити");
         jMenu29.add(jMenuItem24);
@@ -1105,15 +1211,15 @@ private String directoryName = System.getProperty("user.dir");
 
         jMenu28.setText("Системне тестування");
 
-        jMenuItem25.setText("Переглянути");
-        jMenuItem25.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemViewSystemTestingResults.setText("Переглянути");
+        jMenuItemViewSystemTestingResults.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem25ActionPerformed(evt);
+                jMenuItemViewSystemTestingResultsActionPerformed(evt);
             }
         });
-        jMenu28.add(jMenuItem25);
+        jMenu28.add(jMenuItemViewSystemTestingResults);
 
-        jMenuItem28.setText("Редагувати");
+        jMenuItem28.setText("Записати");
         jMenu28.add(jMenuItem28);
 
         jMenuItem26.setText("Очистити");
@@ -1128,6 +1234,15 @@ private String directoryName = System.getProperty("user.dir");
 
         jMenuData.add(jMenu17);
         jMenuData.add(jSeparator13);
+
+        jCheckBoxMenuItem1.setSelected(true);
+        jCheckBoxMenuItem1.setText("Підключення до бази");
+        jCheckBoxMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenuData.add(jCheckBoxMenuItem1);
 
         jMenuItemViewOptions.setText("Налаштування");
         jMenuItemViewOptions.addActionListener(new java.awt.event.ActionListener() {
@@ -1149,7 +1264,12 @@ private String directoryName = System.getProperty("user.dir");
         });
         jMenuResult.add(jMenuItemCalculate);
 
-        jMenuItemEstimate.setText("Оцінити");
+        jMenuItemEstimate.setText("Записати");
+        jMenuItemEstimate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemEstimateActionPerformed(evt);
+            }
+        });
         jMenuResult.add(jMenuItemEstimate);
         jMenuResult.add(jSeparator10);
 
@@ -1345,7 +1465,38 @@ private String directoryName = System.getProperty("user.dir");
     }//GEN-LAST:event_jMenuItemSavingOptionsActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
+       ImplementationPlan implementationPlan = new ImplementationPlan();
+       
+        if (("".equals(jTextFieldImplementationPlanName.getText()))
+                ||("".equals(jFormattedTextFieldImplementationPlanNumber.getText()))
+                ||("".equals(jTextFieldImplementationPlanExpectedIncome.getText()))
+                ||("".equals(jFormattedTextFieldImplementationPlanStability.getText()))
+                ||("".equals(jTextFieldImplementationPlanTotalBugs.getText()))
+                ||("".equals(jFormattedTextFieldTotalUserEstimation.getText()))
+                ||("".equals(((JTextField)jDateChooserImplementationDate.getDateEditor().getUiComponent()).getText()))){
+            JOptionPane.showMessageDialog(null, "Всі поля повинні містити значення", "Помилка збереження", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+            try {  
+        //Проинициализируем их
+       implementationPlan.setImplementationPlanName(jTextFieldImplementationPlanName.getText());
+        implementationPlan.setImplementationPlanNumber(Integer.parseInt(conversionStringVersion(jFormattedTextFieldImplementationPlanNumber.getText())));        
+        implementationPlan.setExpectedIncome(Integer.parseInt(jTextFieldImplementationPlanExpectedIncome.getText()));
+        implementationPlan.setStability(Integer.parseInt(conversionStringPercent(jFormattedTextFieldImplementationPlanStability.getText())));
+        implementationPlan.setTotalBugs(Integer.parseInt(jTextFieldImplementationPlanTotalBugs.getText()));
+        implementationPlan.setTotalUserEstimation(Integer.parseInt(conversionStringPercent(jFormattedTextFieldTotalUserEstimation.getText())));
+        implementationPlan.setImplementationDate(((JTextField)jDateChooserImplementationDate.getDateEditor().getUiComponent()).getText());
+
+     
+        ImplementationPlanFactory.getInstance().getImplementationPlanDAO().addImplementationPlan(implementationPlan);               
+        //unitTestingResults.set     
+    
+    } catch (SQLException ex) {
+        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);      
+          System.out.println("errror="+ex.getErrorCode());
+    }
+    
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
@@ -1366,11 +1517,30 @@ private String directoryName = System.getProperty("user.dir");
     }//GEN-LAST:event_jMenuItemViewOptionsActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        // TODO add your handling code here:
+    try {
+        EstimationResults estimationResults = EstimationResultFactory.getInstance().getEstimationResultsDAO().getEstimationResultsByEstimationNumber(2);
+        jTextField2.setText(estimationResults.getEstimationNumber().toString());
+        jTextFieldEstimationDate.setText(estimationResults.getEstimationDate());
+        jFormattedTextFieldSuccessProbability.setText(estimationResults.getSuccessProbability().toString());
+        jTextFieldExpectedIncome.setText(estimationResults.getExpectedIncome().toString());
+        internalResultsNumber=estimationResults.getInternalResultsNumber();
+        introducingResultNumber=estimationResults.getIntroducingResultNumber();
+        implementationPlanNumber=estimationResults.getImplementationPlanNumber();
+        if (estimationResults.isNeedIntroduction()==true){
+        jTextField12.setText("true");           
+        } else {
+            jTextField12.setText("false");           
+        }
+        
+    } catch (SQLException ex) {
+        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+    }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItemCalculateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCalculateActionPerformed
-        // TODO add your handling code here:
+    internalResultsNumber=2;
+    introducingResultNumber=Integer.parseInt(jSpinner1.getValue().toString());
+    implementationPlanNumber=Integer.parseInt(jFormattedTextFieldImplementationPlanNumber.getText());
     }//GEN-LAST:event_jMenuItemCalculateActionPerformed
 
     private void jCheckBoxMenuItemEstimationResultsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemEstimationResultsActionPerformed
@@ -1391,9 +1561,23 @@ private String directoryName = System.getProperty("user.dir");
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
-    private void jMenuItem25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem25ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem25ActionPerformed
+    private void jMenuItemViewSystemTestingResultsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemViewSystemTestingResultsActionPerformed
+    try {
+        SystemTestingResults systemTestingResults = SystemTestingResultsFactory.getInstance().getSystemTestingResultsDAO().getSystemTestingResultsBySystemTestingNumber(1);
+       jspinnerNumberResult.setValue(systemTestingResults.getSystemTestingNumber());
+       jTextFieldSystemTotalBugs.setText(systemTestingResults.getTotalBugs().toString());
+       jTextFieldSystemTotalBugFixes.setText(systemTestingResults.getTotalBugFixes().toString());
+       jFormattedTextFieldSystemEvaluationUsability.setText(systemTestingResults.getEvaluationUsability().toString());
+       jFormattedTextFieldExerciseTestingEvaluation.setText(systemTestingResults.getExerciseTestingEvaluation().toString());
+       jFormattedTextFieldEvaluationUI.setText(systemTestingResults.getEvaluationUI().toString());
+       jFormattedTextFieldEvaluationCompatibility.setText(systemTestingResults.getEvaluationCompatibility().toString());
+       jFormattedTextFieldEvaluationSafety.setText(systemTestingResults.getEvaluationSafety().toString());
+       jFormattedTextFieldEvaluationPerformance.setText(systemTestingResults.getEvaluationPerformance().toString());
+        System.out.println(jFormattedTextFieldSystemEvaluationUsability.getText());
+    } catch (SQLException ex) {
+        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    }//GEN-LAST:event_jMenuItemViewSystemTestingResultsActionPerformed
 
     private void jMenuItem26ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem26ActionPerformed
         // TODO add your handling code here:
@@ -1597,15 +1781,15 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
         }         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItemSaveAsActionPerformed
 
-    private void jFormattedTextField9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFormattedTextField9ActionPerformed
+    private void jFormattedTextFieldEvaluationRegressionTestingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFormattedTextFieldEvaluationRegressionTestingActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jFormattedTextField9ActionPerformed
+    }//GEN-LAST:event_jFormattedTextFieldEvaluationRegressionTestingActionPerformed
 
     private void jMenuItemClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemClearActionPerformed
         jTextField2.setText("");
-        jTextField4.setText("");
-        jFormattedTextField14.setText("");
-        jTextField10.setText("");
+        jTextFieldEstimationDate.setText("");
+        jFormattedTextFieldSuccessProbability.setText("");
+        jTextFieldExpectedIncome.setText("");
         jTextField12.setText("");
     }//GEN-LAST:event_jMenuItemClearActionPerformed
 
@@ -1615,10 +1799,118 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
         this.dispose();
     }//GEN-LAST:event_jMenuItemResetOptionsActionPerformed
 
+    private void jMenuItem23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem23ActionPerformed
+    try {
+        UnitTestingResults unitTestingResults = UnitTestingResultsFactory.getInstance().getUnitTestingResultsDAO().getUnitTestingResultsByUnitTestingNumber(1);        // TODO add your handling code here:
+        jTextFieldUnitTotalBugs.setText(unitTestingResults.getTotalBugs().toString());
+        jFormattedTextFieldEvaluationRegressionTesting.setText(unitTestingResults.getEvaluationRegressionTesting().toString());
+        jTextFieldMockObjectNumber.setText(unitTestingResults.getMockObjectNumber().toString());
+        jFormattedTextFieldCoverRatioUnitTests.setText(unitTestingResults.getCoverRatioUnitTests().toString());
+        jTextFieldUnitTotalBugFixes.setText(unitTestingResults.getTotalBugFixes().toString());
+         ((JTextField)jDateChooser4.getDateEditor().getUiComponent()).setText( unitTestingResults.getTestingDate());        
+    } catch (SQLException ex) {
+        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);        
+    }
+    }//GEN-LAST:event_jMenuItem23ActionPerformed
+
+    private void jMenuItem20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem20ActionPerformed
+    try {
+        IntroducingResults introducingResults = IntroducingResultsFactory.getInstance().getIntroducingResultDAO().getIntroducingResultsByNumber(1);
+        jTextField20.setText(introducingResults.getTotalBugs().toString());
+        jFormattedTextField13.setText(introducingResults.getTotalUserEstimation().toString());
+        jFormattedTextField11.setText(introducingResults.getFundsSpentOnImplementation().toString());
+        jFormattedTextField12.setText(introducingResults.getStability().toString());
+        jTextField25.setText(introducingResults.getPreliminaryIncome().toString());
+    } catch (SQLException ex) {
+        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+    }
+        
+    }//GEN-LAST:event_jMenuItem20ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+    try {    
+        ImplementationPlan implementationPlan = ImplementationPlanFactory.getInstance().getImplementationPlanDAO().getImplementationPlanByNumber("1");
+        jTextFieldImplementationPlanName.setText(implementationPlan.getImplementationPlanName());
+        jFormattedTextFieldImplementationPlanNumber.setText(implementationPlan.getImplementationPlanNumber().toString());
+        jTextFieldImplementationPlanExpectedIncome.setText(implementationPlan.getExpectedIncome().toString());
+        jFormattedTextFieldImplementationPlanStability.setText(implementationPlan.getStability().toString());
+        jTextFieldImplementationPlanTotalBugs.setText(implementationPlan.getTotalBugs().toString());
+        jFormattedTextFieldTotalUserEstimation.setText(implementationPlan.getStability().toString());
+    } catch (SQLException ex) {
+        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void jMenuItemEstimateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemEstimateActionPerformed
+        EstimationResults estimationResults = new EstimationResults();
+        estimationResults.setEstimationDate(jTextFieldEstimationDate.getText());
+        estimationResults.setSuccessProbability(Integer.parseInt(jFormattedTextFieldSuccessProbability.getText()));
+        estimationResults.setExpectedIncome(Long.parseLong(jTextFieldExpectedIncome.getText()));
+        estimationResults.setInternalResultsNumber(internalResultsNumber);
+        estimationResults.setIntroducingResultNumber(internalResultsNumber);
+        estimationResults.setImplementationPlanNumber(implementationPlanNumber);
+        if (jTextField12.getText()=="true"){
+            estimationResults.setNeedIntroduction(true);
+        } else{
+            estimationResults.setNeedIntroduction(false);
+        }
+    try {
+        EstimationResultFactory.getInstance().getEstimationResultsDAO().addEstimationResults(estimationResults);
+    } catch (SQLException ex) {
+        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+    }            
+    }//GEN-LAST:event_jMenuItemEstimateActionPerformed
+
+    private void jFormattedTextFieldSuccessProbabilityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFormattedTextFieldSuccessProbabilityActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jFormattedTextFieldSuccessProbabilityActionPerformed
+
+    private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
+                  session = HibernateUtil.getSessionFactory().openSession();
+    }//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
+
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        UnitTestingResults unitTestingResults = new UnitTestingResults();
+        
+        if (("".equals(jTextFieldUnitTotalBugs.getText()))
+                ||("".equals(jTextFieldMockObjectNumber.getText()))
+                ||("".equals(jTextFieldUnitTotalBugFixes.getText()))
+                ||("".equals(jTextFieldReportedBugsNumber.getText()))
+                ||("".equals(((JTextField)jDateChooser4.getDateEditor().getUiComponent()).getText()))){
+            JOptionPane.showMessageDialog(null, "Всі поля повинні містити значення", "Помилка збереження", JOptionPane.ERROR_MESSAGE);;
+            return;
+        }
+
+        //Проинициализируем их
+        unitTestingResults.setTotalBugs(Integer.parseInt(jTextFieldUnitTotalBugs.getText()));
+        unitTestingResults.setEvaluationRegressionTesting(Integer.parseInt(conversionStringPercent(jFormattedTextFieldEvaluationRegressionTesting.getText())));
+        unitTestingResults.setMockObjectNumber(Integer.parseInt(jTextFieldMockObjectNumber.getText()));
+        unitTestingResults.setCoverRatioUnitTests(Integer.parseInt(conversionStringPercent(jFormattedTextFieldCoverRatioUnitTests.getText())));
+        unitTestingResults.setTotalBugFixes(Integer.parseInt(jTextFieldUnitTotalBugFixes.getText()));
+        unitTestingResults.setReportedBugsNumber(Integer.parseInt(jTextFieldReportedBugsNumber.getText()));
+        unitTestingResults.setTestingDate(((JTextField)jDateChooser4.getDateEditor().getUiComponent()).getText());
+    try {                
+        UnitTestingResultsFactory.getInstance().getUnitTestingResultsDAO().addUnitTestingResults(unitTestingResults);
+        
+        //unitTestingResults.set     
+    } catch (SQLException ex) {
+        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+   
+    public String conversionStringPercent(String percent){
+        percent=percent.substring(0, 2)+percent.substring(3,4);
+        return percent;
+    }
     
- 
+    public String conversionStringVersion(String percent){
+        percent=percent.substring(3, 5)+percent.substring(6,8);
+        return percent;
+    }
     
-    /**
+    
+    private Session session = null;
+        /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -1646,31 +1938,34 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
         });
     }
 
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler2;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemEstimationResults;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemStatusBar;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemWorkData;
     private javax.swing.JComboBox jComboBox1;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private com.toedter.calendar.JDateChooser jDateChooser2;
-    private com.toedter.calendar.JDateChooser jDateChooser3;
     private com.toedter.calendar.JDateChooser jDateChooser4;
     private com.toedter.calendar.JDateChooser jDateChooser5;
-    private javax.swing.JFormattedTextField jFormattedTextField1;
-    private javax.swing.JFormattedTextField jFormattedTextField10;
+    private com.toedter.calendar.JDateChooser jDateChooserImplementationDate;
     private javax.swing.JFormattedTextField jFormattedTextField11;
     private javax.swing.JFormattedTextField jFormattedTextField12;
     private javax.swing.JFormattedTextField jFormattedTextField13;
-    private javax.swing.JFormattedTextField jFormattedTextField14;
-    private javax.swing.JFormattedTextField jFormattedTextField2;
-    private javax.swing.JFormattedTextField jFormattedTextField3;
-    private javax.swing.JFormattedTextField jFormattedTextField4;
-    private javax.swing.JFormattedTextField jFormattedTextField5;
-    private javax.swing.JFormattedTextField jFormattedTextField6;
-    private javax.swing.JFormattedTextField jFormattedTextField7;
-    private javax.swing.JFormattedTextField jFormattedTextField8;
-    private javax.swing.JFormattedTextField jFormattedTextField9;
+    private javax.swing.JFormattedTextField jFormattedTextFieldCoverRatioUnitTests;
+    private javax.swing.JFormattedTextField jFormattedTextFieldEvaluationCompatibility;
+    private javax.swing.JFormattedTextField jFormattedTextFieldEvaluationPerformance;
+    private javax.swing.JFormattedTextField jFormattedTextFieldEvaluationRegressionTesting;
+    private javax.swing.JFormattedTextField jFormattedTextFieldEvaluationSafety;
+    private javax.swing.JFormattedTextField jFormattedTextFieldEvaluationUI;
+    private javax.swing.JFormattedTextField jFormattedTextFieldExerciseTestingEvaluation;
+    private javax.swing.JFormattedTextField jFormattedTextFieldImplementationPlanNumber;
+    private javax.swing.JFormattedTextField jFormattedTextFieldImplementationPlanStability;
+    private javax.swing.JFormattedTextField jFormattedTextFieldSuccessProbability;
+    private javax.swing.JFormattedTextField jFormattedTextFieldSystemEvaluationUsability;
+    private javax.swing.JFormattedTextField jFormattedTextFieldTotalUserEstimation;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1691,8 +1986,6 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
-    private javax.swing.JLabel jLabel28;
-    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
@@ -1700,13 +1993,17 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel35;
+    private javax.swing.JLabel jLabel36;
+    private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelExpectedIncome;
     private javax.swing.JLabel jLabelStatusBar;
+    private javax.swing.JLabel jLabelSuccessProbability;
     private javax.swing.JMenu jMenu17;
     private javax.swing.JMenu jMenu22;
     private javax.swing.JMenu jMenu23;
@@ -1724,12 +2021,13 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     private javax.swing.JMenuItem jMenuItem22;
     private javax.swing.JMenuItem jMenuItem23;
     private javax.swing.JMenuItem jMenuItem24;
-    private javax.swing.JMenuItem jMenuItem25;
     private javax.swing.JMenuItem jMenuItem26;
     private javax.swing.JMenuItem jMenuItem28;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItemAboutProgram;
     private javax.swing.JMenuItem jMenuItemCalculate;
     private javax.swing.JMenuItem jMenuItemCheckUpdating;
@@ -1747,6 +2045,7 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     private javax.swing.JMenuItem jMenuItemSaveAs;
     private javax.swing.JMenuItem jMenuItemSavingOptions;
     private javax.swing.JMenuItem jMenuItemViewOptions;
+    private javax.swing.JMenuItem jMenuItemViewSystemTestingResults;
     private javax.swing.JMenu jMenuOpenLast;
     private javax.swing.JMenu jMenuResult;
     private javax.swing.JMenu jMenuStyle;
@@ -1760,6 +2059,7 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem1;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemClassic;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemMetallic;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemMotif;
@@ -1783,21 +2083,22 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     private javax.swing.JSpinner jSpinnerModalResultNumber;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPaneDate;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField10;
-    private javax.swing.JTextField jTextField11;
     private javax.swing.JTextField jTextField12;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField20;
     private javax.swing.JTextField jTextField25;
-    private javax.swing.JTextField jTextField28;
-    private javax.swing.JTextField jTextField29;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField9;
+    private javax.swing.JTextField jTextFieldEstimationDate;
+    private javax.swing.JTextField jTextFieldExpectedIncome;
+    private javax.swing.JTextField jTextFieldImplementationPlanExpectedIncome;
+    private javax.swing.JTextField jTextFieldImplementationPlanName;
+    private javax.swing.JTextField jTextFieldImplementationPlanTotalBugs;
+    private javax.swing.JTextField jTextFieldMockObjectNumber;
+    private javax.swing.JTextField jTextFieldReportedBugsNumber;
     private javax.swing.JTextField jTextFieldSystemName;
+    private javax.swing.JTextField jTextFieldSystemTotalBugFixes;
+    private javax.swing.JTextField jTextFieldSystemTotalBugs;
+    private javax.swing.JTextField jTextFieldUnitTotalBugFixes;
+    private javax.swing.JTextField jTextFieldUnitTotalBugs;
     private javax.swing.JSpinner jspinnerNumberResult;
     // End of variables declaration//GEN-END:variables
 }
