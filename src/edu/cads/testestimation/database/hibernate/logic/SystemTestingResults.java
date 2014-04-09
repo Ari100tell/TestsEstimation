@@ -14,7 +14,7 @@ public class SystemTestingResults implements Serializable {
     private String systemName;
     private Integer totalBugs;
     private Integer totalBugFixes;
-    private String testingData;
+    private String testingDate;
     private Integer evaluationUsability;
     private Integer exerciseTestingEvaluation;
     private Integer evaluationUI;
@@ -90,12 +90,12 @@ public class SystemTestingResults implements Serializable {
     }
 
     @Column(name = "TESTING_DATE")
-    public String getTestingData() {
-        return testingData;
+    public String getTestingDate() {
+        return testingDate;
     }
 
-    public void setTestingData(String testingData) {
-        this.testingData = testingData;
+    public void setTestingDate(String testingDate) {
+        this.testingDate = testingDate;
     }
 
     @Column(name = "TOTAL_BUG_FIXES")

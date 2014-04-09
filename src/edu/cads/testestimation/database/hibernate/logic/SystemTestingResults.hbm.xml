@@ -23,8 +23,8 @@
             <column name="TOTAL_BUG_FIXES"/>
         </property>
 
-        <property name="testingData" type="string">
-            <column name="TESTING_DATA"/>
+        <property name="testingDate" type="string">
+            <column name="TESTING_DATE"/>
         </property>
 
         <property name="evaluationUsability" type="java.lang.Integer">
