@@ -56,7 +56,7 @@ public class ImplementationPlanDAOImpl implements ImplementationPlanDAO {
     }
 
     @Override
-    public ImplementationPlan getImplementationPlanByNumber(String implementationPlanNumber) throws SQLException {
+    public ImplementationPlan getImplementationPlanByNumber(Integer implementationPlanNumber) throws SQLException {
         Session session = null;
         ImplementationPlan implementationPlan = null;
         try {

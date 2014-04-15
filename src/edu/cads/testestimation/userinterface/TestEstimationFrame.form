@@ -302,6 +302,9 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="&#x41e;&#x447;&#x438;&#x441;&#x442;&#x438;&#x442;&#x438;"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem24ActionPerformed"/>
+                      </Events>
                     </MenuItem>
                   </SubComponents>
                 </Menu>
@@ -339,6 +342,16 @@
               </SubComponents>
             </Menu>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator13">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem8">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x417;&#x430;&#x432;&#x430;&#x43d;&#x442;&#x430;&#x436;&#x438;&#x442;&#x438; &#x432;&#x441;&#x456;"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem8ActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator14">
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="jCheckBoxMenuItem1">
               <Properties>
@@ -502,17 +515,28 @@
                       </Group>
                   </Group>
                   <Group type="102" attributes="0">
-                      <Component id="jPanel6" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jLabel2" min="-2" pref="124" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="jComboBoxSystem" min="-2" pref="142" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="jLabel29" min="-2" pref="116" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jComboBoxProject" max="32767" attributes="0"/>
+                          </Group>
+                          <Component id="jPanel6" max="32767" attributes="0"/>
+                      </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jPanel7" max="32767" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="jLabel2" min="-2" pref="124" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                      <Component id="jTextFieldSystemName" min="-2" pref="446" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                      <Component id="jComboBox1" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" pref="317" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="jLabel38" min="-2" pref="160" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jComboBoxBranch" min="-2" pref="146" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          </Group>
+                          <Component id="jPanel7" max="32767" attributes="0"/>
+                      </Group>
                   </Group>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -525,8 +549,11 @@
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextFieldSystemName" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jComboBox1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel29" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel38" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboBoxSystem" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboBoxProject" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboBoxBranch" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
@@ -562,12 +589,6 @@
         <Property name="text" type="java.lang.String" value="&#x41d;&#x430;&#x437;&#x432;&#x430; &#x442;&#x435;&#x441;&#x442;&#x443;&#x454;&#x43c;&#x43e;&#x457; &#x441;&#x438;&#x441;&#x442;&#x435;&#x43c;&#x438;"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextFieldSystemName">
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTextField()"/>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="jTextFieldSystemName.setDocument(new JTextFieldFilter(JTextFieldFilter.ALPHA_NUMERIC));&#xa;jTextFieldSystemName.setFont(new java.awt.Font(&quot;Courier New&quot;, 0, 12)); // NOI18N"/>
-      </AuxValues>
-    </Component>
     <Container class="javax.swing.JPanel" name="jPanel6">
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
@@ -589,11 +610,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jTabbedPaneDate" pref="0" max="32767" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-              </Group>
+              <Component id="jTabbedPaneDate" alignment="1" pref="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -614,14 +631,14 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="68" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <EmptySpace min="-2" pref="76" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jLabel17" alignment="0" max="32767" attributes="0"/>
                               <Component id="jLabel18" alignment="1" max="32767" attributes="0"/>
-                              <Component id="jLabel12" alignment="0" pref="214" max="32767" attributes="0"/>
+                              <Component id="jLabel12" alignment="0" max="32767" attributes="0"/>
                               <Component id="jLabel28" max="32767" attributes="0"/>
-                              <Group type="102" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jLabel11" alignment="0" min="-2" pref="168" max="-2" attributes="0"/>
                                       <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -630,12 +647,12 @@
                                       <Component id="jLabel15" alignment="0" min="-2" pref="88" max="-2" attributes="0"/>
                                       <Component id="jLabel16" alignment="0" min="-2" pref="144" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="12" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jFormattedTextFieldEvaluationPerformance" alignment="1" pref="167" max="32767" attributes="0"/>
+                              <Component id="jFormattedTextFieldEvaluationPerformance" alignment="1" max="32767" attributes="0"/>
                               <Component id="jFormattedTextFieldEvaluationSafety" alignment="0" max="32767" attributes="0"/>
                               <Component id="jFormattedTextFieldEvaluationCompatibility" alignment="0" max="32767" attributes="0"/>
                               <Component id="jFormattedTextFieldEvaluationUI" alignment="0" max="32767" attributes="0"/>
@@ -644,16 +661,16 @@
                               <Component id="jspinnerNumberResult" alignment="0" max="32767" attributes="0"/>
                               <Component id="jTextFieldSystemTotalBugs" alignment="0" max="32767" attributes="0"/>
                               <Component id="jFormattedTextFieldSystemEvaluationUsability" alignment="0" max="32767" attributes="0"/>
-                              <Component id="jDateChooser6" max="32767" attributes="0"/>
+                              <Component id="jDateChooser6" pref="167" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="90" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace pref="31" max="32767" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jspinnerNumberResult" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -703,7 +720,7 @@
                               <Component id="jDateChooser6" alignment="1" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel28" alignment="1" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="28" max="32767" attributes="0"/>
+                          <EmptySpace pref="61" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -715,6 +732,10 @@
                       <Font name="Courier New" size="12" style="0"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="jspinnerNumberResultStateChanged"/>
+                    <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jspinnerNumberResultKeyPressed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100000,1))"/>
                     <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="jspinnerNumberResult.setToolTipText(&quot;&#x41e;&#x431;&#x435;&#x440;&#x456;&#x442;&#x44c; &#x43d;&#x43e;&#x43c;&#x435;&#x440; &#x441;&#x43f;&#x438;&#x43a;&#x443; &#x440;&#x435;&#x437;&#x443;&#x43b;&#x44c;&#x442;&#x430;&#x442;&#x456;&#x432; [0;100000]&quot;);&#xa;JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor)jspinnerNumberResult.getEditor();&#xa;DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();&#xa;formatter.setAllowsInvalid(false);"/>
@@ -944,14 +965,14 @@
                               <Component id="jDateChooser4" alignment="1" max="32767" attributes="0"/>
                               <Component id="jTextFieldUnitTotalBugs" alignment="0" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="91" max="32767" attributes="0"/>
+                          <EmptySpace pref="96" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace pref="43" max="32767" attributes="0"/>
+                          <EmptySpace pref="55" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jSpinnerModalResultNumber" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -991,7 +1012,7 @@
                               <Component id="jDateChooser4" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="81" max="32767" attributes="0"/>
+                          <EmptySpace pref="91" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1095,6 +1116,10 @@
                       <Connection code="false" type="code"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="jSpinnerModalResultNumberStateChanged"/>
+                    <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jSpinnerModalResultNumberKeyPressed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JSpinner(new SpinnerNumberModel(0,0,100000,1))"/>
                     <AuxValue name="JavaCodeGenerator_DeclarationPre" type="java.lang.String" value="private SpinnerNumberModel spinnerNumberModel;"/>
@@ -1191,14 +1216,14 @@
                               <Component id="jFormattedTextFieldTotalUserEstimation" alignment="0" pref="168" max="32767" attributes="0"/>
                               <Component id="jFormattedTextFieldImplementationPlanStability" alignment="0" pref="168" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="81" max="32767" attributes="0"/>
+                          <EmptySpace pref="86" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace pref="45" max="32767" attributes="0"/>
+                          <EmptySpace pref="67" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel27" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jTextFieldImplementationPlanName" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1219,29 +1244,21 @@
                               <Component id="jFormattedTextFieldImplementationPlanStability" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
-                                  <Component id="jLabel34" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="jTextFieldImplementationPlanTotalBugs" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel33" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="jFormattedTextFieldTotalUserEstimation" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jTextFieldImplementationPlanTotalBugs" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel33" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="2" pref="2" max="-2" attributes="0"/>
-                                  <Component id="jLabel31" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="jDateChooserImplementationDate" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jFormattedTextFieldTotalUserEstimation" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel34" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="97" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="1" attributes="0">
+                              <Component id="jDateChooserImplementationDate" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel31" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace pref="107" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1262,7 +1279,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="jTextFieldImplementationPlanName.setDocument(new JTextFieldFilter(JTextFieldFilter.ALPHA_NUMERIC));"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="jTextFieldImplementationPlanName.setDocument(new JTextFieldFilter(JTextFieldFilter.ALPHA_NUMERIC+JTextFieldFilter.SPASE));"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel30">
@@ -1332,6 +1349,9 @@
                       <Font name="Courier New" size="12" style="0"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jFormattedTextFieldImplementationPlanNumberKeyPressed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JFormattedTextField(formatter7)"/>
                     <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="MaskFormatter formatter7 = null;&#xa;        try {&#xa;            formatter7 = new MaskFormatter(&quot;v. ##.##&quot;);&#xa;            formatter7.setPlaceholderCharacter(&apos;0&apos;);&#xa;        } catch (java.text.ParseException exc) {&#xa;            // &#x442;&#x440;&#x435;&#x431;&#x443;&#x435;&#x442;&#x441;&#x44f; &#x440;&#x443;&#x447;&#x43d;&#x43e;&#x435; &#x438;&#x441;&#x43a;&#x43b;&#x44e;&#x447;&#x435;&#x43d;&#x438;&#x435;&#xa;        }"/>
@@ -1425,18 +1445,23 @@
                                   </Group>
                               </Group>
                               <Group type="102" attributes="0">
-                                  <EmptySpace min="68" pref="287" max="32767" attributes="0"/>
+                                  <EmptySpace min="68" pref="289" max="32767" attributes="0"/>
                                   <Component id="jSpinner1" min="-2" pref="167" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace pref="90" max="32767" attributes="0"/>
+                          <EmptySpace pref="93" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="-2" pref="202" max="-2" attributes="0"/>
+                          <Component id="jButton1" min="-2" pref="97" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace pref="42" max="32767" attributes="0"/>
+                          <EmptySpace pref="54" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel19" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jSpinner1" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1471,7 +1496,9 @@
                               <Component id="jLabel20" min="-2" max="-2" attributes="0"/>
                               <Component id="jDateChooser5" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="112" max="32767" attributes="0"/>
+                          <EmptySpace pref="67" max="32767" attributes="0"/>
+                          <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1562,6 +1589,10 @@
                       <SpinnerEditor format="" type="3"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="jSpinner1StateChanged"/>
+                    <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jSpinner1KeyPressed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JSpinner(new SpinnerNumberModel(0,0,1000,1))"/>
                     <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JSpinner.NumberEditor jsEditorIntroductionData = (JSpinner.NumberEditor)jSpinner1.getEditor();&#xa;DefaultFormatter formatterIntroductionData = (DefaultFormatter) jsEditorIntroductionData.getTextField().getFormatter();&#xa;formatterIntroductionData.setAllowsInvalid(false);"/>
@@ -1611,6 +1642,14 @@
                     <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="JTextFieldFilter jTextFieldFilterFundsSpentOnImplementation = new JTextFieldFilter(JTextFieldFilter.NUMERIC);&#xa;jTextFieldFilterFundsSpentOnImplementation.setLimitLength(9);&#xa;jTextFieldIntroducingResultsTotalBugs.setDocument(jTextFieldFilterFundsSpentOnImplementation);"/>
                   </AuxValues>
                 </Component>
+                <Component class="javax.swing.JButton" name="jButton1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="jButton1"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+                  </Events>
+                </Component>
               </SubComponents>
             </Container>
           </SubComponents>
@@ -1631,7 +1670,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="jTabbedPane2" max="32767" attributes="0"/>
+                  <Component id="jTabbedPane2" pref="444" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -1680,14 +1719,14 @@
                               <Component id="jTextFieldEstimationDate" alignment="0" max="32767" attributes="0"/>
                               <Component id="jFormattedTextFieldSuccessProbability" pref="167" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="42" max="32767" attributes="0"/>
+                          <EmptySpace pref="46" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace pref="45" max="32767" attributes="0"/>
+                          <EmptySpace pref="46" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jTextField2" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1712,7 +1751,7 @@
                               <Component id="jLabel35" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jTextField12" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="152" max="32767" attributes="0"/>
+                          <EmptySpace pref="151" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1814,7 +1853,37 @@
         <AuxValue name="classDetails" type="java.lang.String" value="Box.Filler.HorizontalStrut"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JComboBox" name="jComboBox1">
+    <Component class="javax.swing.JLabel" name="jLabel29">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&#x41d;&#x43e;&#x43c;&#x435;&#x440; &#x43f;&#x440;&#x43e;&#x435;&#x43a;&#x442;&#x443;"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel38">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&#x41d;&#x43e;&#x43c;&#x435;&#x440; &#x433;&#x456;&#x43b;&#x43a;&#x438;"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="jLabel38.setVisible(false);"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboBoxSystem">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="loadDataAboutSystem()" type="code"/>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JComboBox()"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboBoxProject">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="loadDataAboutProject()" type="code"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jComboBoxBranch">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="4">
@@ -1826,7 +1895,7 @@
         </Property>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="jComboBox1.setVisible(false);&#xa;jComboBox1.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {&#xa;&#xa;            @Override&#xa;            public void keyTyped(KeyEvent e) {&#xa;                char c = e.getKeyChar();&#xa;                if (jComboBox1.getEditor().getItem().toString().length() &lt; 4) {&#xa;                    if ((Character.isDigit(c) || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE))) {&#xa;                        getToolkit().beep();&#xa;                        e.consume();&#xa;                    }&#xa;                } else { &#xa;                    e.consume();&#xa;                }&#xa;            }&#xa;        });"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="jComboBoxBranch.setVisible(false);"/>
       </AuxValues>
     </Component>
   </SubComponents>

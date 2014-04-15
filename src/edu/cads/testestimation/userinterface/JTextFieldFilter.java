@@ -6,6 +6,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 class JTextFieldFilter extends PlainDocument {
+    public static final String SPASE =
+    " ";
     public static final String LOWERCASE =
             "abcdefghijklmnopqrstuvwxyz";
     public static final String UPPERCASE =

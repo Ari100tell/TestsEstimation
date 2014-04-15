@@ -3,31 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package edu.cads.testestimation.userinterface;
 
-
-import edu.cads.testestimation.database.hibernate.DAO.factory.EstimationResultFactory;
-import edu.cads.testestimation.database.hibernate.DAO.factory.ImplementationPlanFactory;
-import edu.cads.testestimation.database.hibernate.DAO.factory.IntroducingResultsFactory;
-import edu.cads.testestimation.database.hibernate.DAO.factory.SystemTestingResultsFactory;
-import edu.cads.testestimation.database.hibernate.DAO.factory.UnitTestingResultsFactory;
-import edu.cads.testestimation.database.hibernate.logic.EstimationResults;
-import edu.cads.testestimation.database.hibernate.logic.ImplementationPlan;
-import edu.cads.testestimation.database.hibernate.logic.IntroducingResults;
-import edu.cads.testestimation.database.hibernate.logic.SystemTestingResults;
-import edu.cads.testestimation.database.hibernate.logic.UnitTestingResults;
+import edu.cads.testestimation.database.hibernate.DAO.factory.*;
+import edu.cads.testestimation.database.hibernate.logic.*;
 import edu.cads.testestimation.database.hibernate.util.HibernateUtil;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.attribute.HashPrintRequestAttributeSet;
@@ -36,24 +26,31 @@ import javax.swing.*;
 import javax.swing.text.DefaultFormatter;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
+import oracle.jdbc.OracleTypes;
 import org.hibernate.Session;
-import org.hibernate.exception.ConstraintViolationException;
-import sun.util.calendar.BaseCalendar.Date;
+import org.hibernate.jdbc.Work;
 
 /**
  *
  * @author Ari100tell
  */
 public class TestEstimationFrame extends javax.swing.JFrame {
-private String directoryName = System.getProperty("user.dir");
+
+    private String directoryName = System.getProperty("user.dir");
+    private UnitTestingResults unitTestingResultsCurrent = null;
+    private SystemTestingResults systemTestingResults = null;
     private Integer internalResultsNumber;
     private Integer introducingResultNumber;
     private Integer implementationPlanNumber;
+    private int systemCount;
+    private int projectIdCurrent = 1;
+
     /**
      * Creates new form TestEstimationFrame
      */
     public TestEstimationFrame() {
         initComponents();
+        
     }
 
     /**
@@ -70,7 +67,6 @@ private String directoryName = System.getProperty("user.dir");
         jRadioButtonMenuItem1 = new javax.swing.JRadioButtonMenuItem();
         jLabelStatusBar = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jTextFieldSystemName = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
         jTabbedPaneDate = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
@@ -232,6 +228,7 @@ private String directoryName = System.getProperty("user.dir");
         jFormattedTextFieldIntroducingResultsTotalUserEstimation = new javax.swing.JFormattedTextField(formatter14);
         jDateChooser5 = new com.toedter.calendar.JDateChooser();
         jTextFieldFundsSpentOnImplementation = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel4 = new javax.swing.JPanel();
@@ -247,7 +244,11 @@ private String directoryName = System.getProperty("user.dir");
         jFormattedTextFieldSuccessProbability = new javax.swing.JFormattedTextField();
         jProgressBar1 = new javax.swing.JProgressBar(0,0,100);
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 32767));
-        jComboBox1 = new javax.swing.JComboBox();
+        jLabel29 = new javax.swing.JLabel();
+        jLabel38 = new javax.swing.JLabel();
+        jComboBoxSystem = new javax.swing.JComboBox();
+        jComboBoxProject = new javax.swing.JComboBox();
+        jComboBoxBranch = new javax.swing.JComboBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuFile = new javax.swing.JMenu();
         jMenuItemSave = new javax.swing.JMenuItem();
@@ -299,6 +300,8 @@ private String directoryName = System.getProperty("user.dir");
         jMenuItem28 = new javax.swing.JMenuItem();
         jMenuItem26 = new javax.swing.JMenuItem();
         jSeparator13 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem8 = new javax.swing.JMenuItem();
+        jSeparator14 = new javax.swing.JPopupMenu.Separator();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jMenuItemViewOptions = new javax.swing.JMenuItem();
         jMenuResult = new javax.swing.JMenu();
@@ -328,9 +331,6 @@ private String directoryName = System.getProperty("user.dir");
 
         jLabel2.setText("Назва тестуємої системи");
 
-        jTextFieldSystemName.setDocument(new JTextFieldFilter(JTextFieldFilter.ALPHA_NUMERIC));
-        jTextFieldSystemName.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
-
         jPanel6.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         jspinnerNumberResult.setToolTipText("Оберіть номер спику результатів [0;100000]");
@@ -338,6 +338,16 @@ private String directoryName = System.getProperty("user.dir");
         DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();
         formatter.setAllowsInvalid(false);
         jspinnerNumberResult.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jspinnerNumberResult.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jspinnerNumberResultStateChanged(evt);
+            }
+        });
+        jspinnerNumberResult.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jspinnerNumberResultKeyPressed(evt);
+            }
+        });
 
         jLabel9.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jLabel9.setText("Номер списку результатів");
@@ -405,11 +415,11 @@ private String directoryName = System.getProperty("user.dir");
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(68, 68, 68)
+                .addGap(76, 76, 76)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel28, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -419,10 +429,10 @@ private String directoryName = System.getProperty("user.dir");
                             .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 12, Short.MAX_VALUE)))
                 .addGap(5, 5, 5)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jFormattedTextFieldEvaluationPerformance, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
+                    .addComponent(jFormattedTextFieldEvaluationPerformance, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jFormattedTextFieldEvaluationSafety)
                     .addComponent(jFormattedTextFieldEvaluationCompatibility)
                     .addComponent(jFormattedTextFieldEvaluationUI)
@@ -431,13 +441,13 @@ private String directoryName = System.getProperty("user.dir");
                     .addComponent(jspinnerNumberResult)
                     .addComponent(jTextFieldSystemTotalBugs)
                     .addComponent(jFormattedTextFieldSystemEvaluationUsability)
-                    .addComponent(jDateChooser6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(90, 90, 90))
+                    .addComponent(jDateChooser6, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
+                .addGap(82, 82, 82))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap(31, Short.MAX_VALUE)
+                .addGap(20, 20, 20)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(jspinnerNumberResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -477,7 +487,7 @@ private String directoryName = System.getProperty("user.dir");
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jDateChooser6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel28))
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addContainerGap(61, Short.MAX_VALUE))
         );
 
         jTabbedPaneDate.addTab("Дані системного тестування", jPanel5);
@@ -526,6 +536,16 @@ private String directoryName = System.getProperty("user.dir");
         jSpinnerModalResultNumber.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jSpinnerModalResultNumber.setEditor(new javax.swing.JSpinner.NumberEditor(jSpinnerModalResultNumber, ""));
         jSpinnerModalResultNumber.setRequestFocusEnabled(false);
+        jSpinnerModalResultNumber.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSpinnerModalResultNumberStateChanged(evt);
+            }
+        });
+        jSpinnerModalResultNumber.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jSpinnerModalResultNumberKeyPressed(evt);
+            }
+        });
 
         jFormattedTextFieldEvaluationRegressionTesting.setText("jFormattedTextField9");
         jFormattedTextFieldEvaluationRegressionTesting.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
@@ -574,12 +594,12 @@ private String directoryName = System.getProperty("user.dir");
                     .addComponent(jSpinnerModalResultNumber, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jDateChooser4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jTextFieldUnitTotalBugs))
-                .addContainerGap(91, Short.MAX_VALUE))
+                .addContainerGap(96, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(43, Short.MAX_VALUE)
+                .addContainerGap(55, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jSpinnerModalResultNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -611,7 +631,7 @@ private String directoryName = System.getProperty("user.dir");
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jDateChooser4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8))
-                .addContainerGap(81, Short.MAX_VALUE))
+                .addContainerGap(91, Short.MAX_VALUE))
         );
 
         jTabbedPaneDate.addTab("Дані модульного тестування", jPanel1);
@@ -619,7 +639,7 @@ private String directoryName = System.getProperty("user.dir");
         jLabel27.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jLabel27.setText("Назва");
 
-        jTextFieldImplementationPlanName.setDocument(new JTextFieldFilter(JTextFieldFilter.ALPHA_NUMERIC));
+        jTextFieldImplementationPlanName.setDocument(new JTextFieldFilter(JTextFieldFilter.ALPHA_NUMERIC+JTextFieldFilter.SPASE));
         jTextFieldImplementationPlanName.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
 
         jLabel30.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
@@ -649,6 +669,11 @@ private String directoryName = System.getProperty("user.dir");
 
         jFormattedTextFieldImplementationPlanNumber.setText("jFormattedTextField7");
         jFormattedTextFieldImplementationPlanNumber.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        jFormattedTextFieldImplementationPlanNumber.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jFormattedTextFieldImplementationPlanNumberKeyPressed(evt);
+            }
+        });
 
         jFormattedTextFieldTotalUserEstimation.setText("jFormattedTextField8");
         jFormattedTextFieldTotalUserEstimation.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
@@ -684,12 +709,12 @@ private String directoryName = System.getProperty("user.dir");
                     .addComponent(jTextFieldImplementationPlanTotalBugs)
                     .addComponent(jFormattedTextFieldTotalUserEstimation, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
                     .addComponent(jFormattedTextFieldImplementationPlanStability, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE))
-                .addContainerGap(81, Short.MAX_VALUE))
+                .addContainerGap(86, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(45, Short.MAX_VALUE)
+                .addContainerGap(67, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel27)
                     .addComponent(jTextFieldImplementationPlanName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -706,23 +731,18 @@ private String directoryName = System.getProperty("user.dir");
                     .addComponent(jLabel37)
                     .addComponent(jFormattedTextFieldImplementationPlanStability, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addComponent(jLabel34))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextFieldImplementationPlanTotalBugs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel33))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jFormattedTextFieldTotalUserEstimation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
-                        .addComponent(jLabel31))
-                    .addComponent(jDateChooserImplementationDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(97, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldImplementationPlanTotalBugs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel33))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jFormattedTextFieldTotalUserEstimation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel34))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jDateChooserImplementationDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel31))
+                .addContainerGap(107, Short.MAX_VALUE))
         );
 
         jTabbedPaneDate.addTab("План впровадження", jPanel2);
@@ -763,6 +783,16 @@ private String directoryName = System.getProperty("user.dir");
         formatterIntroductionData.setAllowsInvalid(false);
         jSpinner1.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jSpinner1.setEditor(new javax.swing.JSpinner.NumberEditor(jSpinner1, ""));
+        jSpinner1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSpinner1StateChanged(evt);
+            }
+        });
+        jSpinner1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jSpinner1KeyPressed(evt);
+            }
+        });
 
         jFormattedTextFieldIntroducingResultsStability.setText("jFormattedTextField12");
         jFormattedTextFieldIntroducingResultsStability.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
@@ -777,6 +807,13 @@ private String directoryName = System.getProperty("user.dir");
         jTextFieldFilterFundsSpentOnImplementation.setLimitLength(9);
         jTextFieldIntroducingResultsTotalBugs.setDocument(jTextFieldFilterFundsSpentOnImplementation);
         jTextFieldFundsSpentOnImplementation.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+
+        jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -808,14 +845,18 @@ private String directoryName = System.getProperty("user.dir");
                             .addComponent(jTextFieldPreliminaryIncome)
                             .addComponent(jTextFieldFundsSpentOnImplementation, javax.swing.GroupLayout.Alignment.LEADING)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(68, 287, Short.MAX_VALUE)
+                        .addGap(68, 289, Short.MAX_VALUE)
                         .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(90, Short.MAX_VALUE))
+                .addContainerGap(93, Short.MAX_VALUE))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(202, 202, 202)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap(42, Short.MAX_VALUE)
+                .addContainerGap(54, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel19)
                     .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -843,7 +884,9 @@ private String directoryName = System.getProperty("user.dir");
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel20)
                     .addComponent(jDateChooser5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(112, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(32, 32, 32))
         );
 
         jTabbedPaneDate.addTab("Дані впровадження", jPanel3);
@@ -859,10 +902,7 @@ private String directoryName = System.getProperty("user.dir");
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jTabbedPaneDate, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jTabbedPaneDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
 
         jPanel7.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -916,12 +956,12 @@ private String directoryName = System.getProperty("user.dir");
                     .addComponent(jTextFieldExpectedIncome)
                     .addComponent(jTextFieldEstimationDate)
                     .addComponent(jFormattedTextFieldSuccessProbability, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap(45, Short.MAX_VALUE)
+                .addContainerGap(46, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -941,7 +981,7 @@ private String directoryName = System.getProperty("user.dir");
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel35)
                     .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(152, Short.MAX_VALUE))
+                .addContainerGap(151, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("Результати оцінювання", jPanel4);
@@ -952,7 +992,7 @@ private String directoryName = System.getProperty("user.dir");
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane2)
+                .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
@@ -965,23 +1005,17 @@ private String directoryName = System.getProperty("user.dir");
 
         jProgressBar1.setValue(10);
 
-        jComboBox1.setVisible(false);
-        jComboBox1.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+        jLabel29.setText("Номер проекту");
 
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                if (jComboBox1.getEditor().getItem().toString().length() < 4) {
-                    if ((Character.isDigit(c) || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE))) {
-                        getToolkit().beep();
-                        e.consume();
-                    }
-                } else {
-                    e.consume();
-                }
-            }
-        });
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jLabel38.setText("Номер гілки");
+        jLabel38.setVisible(false);
+
+        jComboBoxSystem.setModel(loadDataAboutSystem());
+
+        jComboBoxProject.setModel(loadDataAboutProject());
+
+        jComboBoxBranch.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxBranch.setVisible(false);
 
         jMenuFile.setText("Файл");
 
@@ -1227,6 +1261,11 @@ private String directoryName = System.getProperty("user.dir");
         jMenu29.add(jMenuItem7);
 
         jMenuItem24.setText("Очистити");
+        jMenuItem24.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem24ActionPerformed(evt);
+            }
+        });
         jMenu29.add(jMenuItem24);
 
         jMenu17.add(jMenu29);
@@ -1261,6 +1300,15 @@ private String directoryName = System.getProperty("user.dir");
 
         jMenuData.add(jMenu17);
         jMenuData.add(jSeparator13);
+
+        jMenuItem8.setText("Завантажити всі");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
+        jMenuData.add(jMenuItem8);
+        jMenuData.add(jSeparator14);
 
         jCheckBoxMenuItem1.setSelected(true);
         jCheckBoxMenuItem1.setText("Підключення до бази");
@@ -1388,16 +1436,24 @@ private String directoryName = System.getProperty("user.dir");
                                 .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jComboBoxSystem, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel29, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jComboBoxProject, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextFieldSystemName, javax.swing.GroupLayout.PREFERRED_SIZE, 446, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(317, 317, 317)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel38, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jComboBoxBranch, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -1406,8 +1462,11 @@ private String directoryName = System.getProperty("user.dir");
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextFieldSystemName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel29)
+                    .addComponent(jLabel38)
+                    .addComponent(jComboBoxSystem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBoxProject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBoxBranch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1435,7 +1494,7 @@ private String directoryName = System.getProperty("user.dir");
     private void jMenuItemAboutProgramActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutProgramActionPerformed
         AboutFrame aboutFrame = new AboutFrame();
         aboutFrame.setVisible(true);
-        
+
     }//GEN-LAST:event_jMenuItemAboutProgramActionPerformed
 
     private void jMenuItemDocumentationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDocumentationActionPerformed
@@ -1443,7 +1502,7 @@ private String directoryName = System.getProperty("user.dir");
     }//GEN-LAST:event_jMenuItemDocumentationActionPerformed
 
     private void jMenuItemOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemOpenActionPerformed
-     JFileChooser jFileChooser = new JFileChooser(directoryName);
+        JFileChooser jFileChooser = new JFileChooser(directoryName);
         jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         jFileChooser.setMultiSelectionEnabled(true);
         jFileChooser.setAcceptAllFileFilterUsed(false);
@@ -1454,8 +1513,8 @@ private String directoryName = System.getProperty("user.dir");
         int i = 0;
         while (i < fileForChoose.length) {
             if (!fileForChoose[i].isFile() || !fileForChoose[i].canRead()) {
-                JOptionPane.showMessageDialog(null, "Файл " + fileForChoose[i].getName() + " является каталогом, не" +
-                        " доступен для чтения или не создан!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Файл " + fileForChoose[i].getName() + " является каталогом, не"
+                        + " доступен для чтения или не создан!", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (fileForChoose != null) {
@@ -1467,7 +1526,7 @@ private String directoryName = System.getProperty("user.dir");
     }//GEN-LAST:event_jMenuItemOpenActionPerformed
 
     private void jMenuItemPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPrintActionPerformed
-          try {
+        try {
             String cn = UIManager.getSystemLookAndFeelClassName();
             UIManager.setLookAndFeel(cn); // Use the native L&F
         } catch (Exception cnf) {
@@ -1479,9 +1538,9 @@ private String directoryName = System.getProperty("user.dir");
         boolean ok = job.printDialog(aset);
         if (ok) {
             try {
-                 job.print(aset);
+                job.print(aset);
             } catch (PrinterException ex) {
-             /* The job did not successfully complete */
+                /* The job did not successfully complete */
             }
         }
         System.exit(0);
@@ -1492,38 +1551,37 @@ private String directoryName = System.getProperty("user.dir");
     }//GEN-LAST:event_jMenuItemSavingOptionsActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-       ImplementationPlan implementationPlan = new ImplementationPlan();
-       
+        ImplementationPlan implementationPlan = new ImplementationPlan();
+
         if (("".equals(jTextFieldImplementationPlanName.getText()))
-                ||("".equals(jFormattedTextFieldImplementationPlanNumber.getText()))
-                ||("".equals(jTextFieldImplementationPlanExpectedIncome.getText()))
-                ||("".equals(jFormattedTextFieldImplementationPlanStability.getText()))
-                ||("".equals(jTextFieldImplementationPlanTotalBugs.getText()))
-                ||("".equals(jFormattedTextFieldTotalUserEstimation.getText()))
-                ||("".equals(((JTextField)jDateChooserImplementationDate.getDateEditor().getUiComponent()).getText()))){
+                || ("".equals(jFormattedTextFieldImplementationPlanNumber.getText()))
+                || ("".equals(jTextFieldImplementationPlanExpectedIncome.getText()))
+                || ("".equals(jFormattedTextFieldImplementationPlanStability.getText()))
+                || ("".equals(jTextFieldImplementationPlanTotalBugs.getText()))
+                || ("".equals(jFormattedTextFieldTotalUserEstimation.getText()))
+                || ("".equals(((JTextField) jDateChooserImplementationDate.getDateEditor().getUiComponent()).getText()))) {
             JOptionPane.showMessageDialog(null, "Всі поля повинні містити значення", "Помилка збереження", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-            try {  
-        //Проинициализируем их
-       implementationPlan.setImplementationPlanName(jTextFieldImplementationPlanName.getText());
-        implementationPlan.setImplementationPlanNumber(Integer.parseInt(conversionStringVersion(jFormattedTextFieldImplementationPlanNumber.getText())));        
-        implementationPlan.setExpectedIncome(Integer.parseInt(jTextFieldImplementationPlanExpectedIncome.getText()));
-        implementationPlan.setStability(Integer.parseInt(conversionStringPercent(jFormattedTextFieldImplementationPlanStability.getText())));
-        implementationPlan.setTotalBugs(Integer.parseInt(jTextFieldImplementationPlanTotalBugs.getText()));
-        implementationPlan.setTotalUserEstimation(Integer.parseInt(conversionStringPercent(jFormattedTextFieldTotalUserEstimation.getText())));
-        implementationPlan.setImplementationDate(((JTextField)jDateChooserImplementationDate.getDateEditor().getUiComponent()).getText());
+        try {
+            //Проинициализируем их
+            implementationPlan.setImplementationPlanName(jTextFieldImplementationPlanName.getText());
+            implementationPlan.setImplementationPlanNumber(Integer.parseInt(conversionStringVersion(jFormattedTextFieldImplementationPlanNumber.getText())));
+            implementationPlan.setExpectedIncome(Integer.parseInt(jTextFieldImplementationPlanExpectedIncome.getText()));
+            implementationPlan.setStability(Integer.parseInt(conversionStringPercent(jFormattedTextFieldImplementationPlanStability.getText())));
+            implementationPlan.setTotalBugs(Integer.parseInt(jTextFieldImplementationPlanTotalBugs.getText()));
+            implementationPlan.setTotalUserEstimation(Integer.parseInt(conversionStringPercent(jFormattedTextFieldTotalUserEstimation.getText())));
+            implementationPlan.setImplementationDate(((JTextField) jDateChooserImplementationDate.getDateEditor().getUiComponent()).getText());
 
-     
-        ImplementationPlanFactory.getInstance().getImplementationPlanDAO().addImplementationPlan(implementationPlan);               
+            ImplementationPlanFactory.getInstance().getImplementationPlanDAO().addImplementationPlan(implementationPlan);
         //unitTestingResults.set     
-    
-    } catch (SQLException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);      
-          System.out.println("errror="+ex.getErrorCode());
-    }
-    
+
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("errror=" + ex.getErrorCode());
+        }
+
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
@@ -1535,53 +1593,53 @@ private String directoryName = System.getProperty("user.dir");
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem22ActionPerformed
-        // TODO add your handling code here:
+    
     }//GEN-LAST:event_jMenuItem22ActionPerformed
 
     private void jMenuItemViewOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemViewOptionsActionPerformed
         OptionsFrame optionsFrame = new OptionsFrame();
-        optionsFrame.setVisible(true);                
+        optionsFrame.setVisible(true);
     }//GEN-LAST:event_jMenuItemViewOptionsActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-    try {
-        EstimationResults estimationResults = EstimationResultFactory.getInstance().getEstimationResultsDAO().getEstimationResultsByEstimationNumber(2);
-        jTextField2.setText(estimationResults.getEstimationNumber().toString());
-        jTextFieldEstimationDate.setText(estimationResults.getEstimationDate());
-        jFormattedTextFieldSuccessProbability.setText(estimationResults.getSuccessProbability().toString());
-        jTextFieldExpectedIncome.setText(estimationResults.getExpectedIncome().toString());
-        internalResultsNumber=estimationResults.getInternalResultsNumber();
-        introducingResultNumber=estimationResults.getIntroducingResultNumber();
-        implementationPlanNumber=estimationResults.getImplementationPlanNumber();
-        if (estimationResults.isNeedIntroduction()==true){
-        jTextField12.setText("true");           
-        } else {
-            jTextField12.setText("false");           
+        try {
+            EstimationResults estimationResults = EstimationResultFactory.getInstance().getEstimationResultsDAO().getEstimationResultsByEstimationNumber(2);
+            jTextField2.setText(estimationResults.getEstimationNumber().toString());
+            jTextFieldEstimationDate.setText(estimationResults.getEstimationDate());
+            jFormattedTextFieldSuccessProbability.setText(estimationResults.getSuccessProbability().toString());
+            jTextFieldExpectedIncome.setText(estimationResults.getExpectedIncome().toString());
+            internalResultsNumber = estimationResults.getInternalResultsNumber();
+            introducingResultNumber = estimationResults.getIntroducingResultNumber();
+            implementationPlanNumber = estimationResults.getImplementationPlanNumber();
+            if (estimationResults.isNeedIntroduction() == true) {
+                jTextField12.setText("true");
+            } else {
+                jTextField12.setText("false");
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    } catch (SQLException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItemCalculateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCalculateActionPerformed
-    internalResultsNumber=2;
-    introducingResultNumber=Integer.parseInt(jSpinner1.getValue().toString());
-    implementationPlanNumber=Integer.parseInt(jFormattedTextFieldImplementationPlanNumber.getText());
+        internalResultsNumber = 2;
+        introducingResultNumber = Integer.parseInt(jSpinner1.getValue().toString());
+        implementationPlanNumber = Integer.parseInt(jFormattedTextFieldImplementationPlanNumber.getText());
     }//GEN-LAST:event_jMenuItemCalculateActionPerformed
 
     private void jCheckBoxMenuItemEstimationResultsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemEstimationResultsActionPerformed
-              if (jCheckBoxMenuItemEstimationResults.isSelected()){
-         //  jTabbedPane2.setVisible(true);
-           jPanel7.setVisible(true);
-           jCheckBoxMenuItemWorkData.setEnabled(true);
-           
-       }else{
+        if (jCheckBoxMenuItemEstimationResults.isSelected()) {
+            //  jTabbedPane2.setVisible(true);
+            jPanel7.setVisible(true);
+            jCheckBoxMenuItemWorkData.setEnabled(true);
+
+        } else {
            //jTabbedPane2.setVisible(false);
-           //jTabbedPane1.setVisible(true);
-                  jPanel7.setVisible(false);
-                  jCheckBoxMenuItemWorkData.setEnabled(false);
-       }        // TODO add your handling code here:
+            //jTabbedPane1.setVisible(true);
+            jPanel7.setVisible(false);
+            jCheckBoxMenuItemWorkData.setEnabled(false);
+        }        // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBoxMenuItemEstimationResultsActionPerformed
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
@@ -1589,29 +1647,83 @@ private String directoryName = System.getProperty("user.dir");
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItemViewSystemTestingResultsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemViewSystemTestingResultsActionPerformed
-    try {
-        SystemTestingResults systemTestingResults = SystemTestingResultsFactory.getInstance().getSystemTestingResultsDAO().getSystemTestingResultsBySystemTestingNumber(1);
-       jspinnerNumberResult.setValue(systemTestingResults.getSystemTestingNumber());
-       jTextFieldSystemTotalBugs.setText(systemTestingResults.getTotalBugs().toString());
-       jTextFieldSystemTotalBugFixes.setText(systemTestingResults.getTotalBugFixes().toString());
-       jFormattedTextFieldSystemEvaluationUsability.setText(systemTestingResults.getEvaluationUsability().toString());
-       jFormattedTextFieldExerciseTestingEvaluation.setText(systemTestingResults.getExerciseTestingEvaluation().toString());
-       jFormattedTextFieldEvaluationUI.setText(systemTestingResults.getEvaluationUI().toString());
-       jFormattedTextFieldEvaluationCompatibility.setText(systemTestingResults.getEvaluationCompatibility().toString());
-       jFormattedTextFieldEvaluationSafety.setText(systemTestingResults.getEvaluationSafety().toString());
-       jFormattedTextFieldEvaluationPerformance.setText(systemTestingResults.getEvaluationPerformance().toString());
-        System.out.println(jFormattedTextFieldSystemEvaluationUsability.getText());
-    } catch (SQLException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
+        try {
+            SystemTestingResults systemTestingResults = SystemTestingResultsFactory.getInstance().getSystemTestingResultsDAO().getSystemTestingResultsBySystemTestingNumber(Integer.parseInt(jspinnerNumberResult.getValue().toString()));
+
+            jTextFieldSystemTotalBugs.setText(systemTestingResults.getTotalBugs().toString());
+            jTextFieldSystemTotalBugFixes.setText(systemTestingResults.getTotalBugFixes().toString());
+            jFormattedTextFieldSystemEvaluationUsability.setText(systemTestingResults.getEvaluationUsability().toString());
+            jFormattedTextFieldExerciseTestingEvaluation.setText(systemTestingResults.getExerciseTestingEvaluation().toString());
+            jFormattedTextFieldEvaluationUI.setText(systemTestingResults.getEvaluationUI().toString());
+            jFormattedTextFieldEvaluationCompatibility.setText(systemTestingResults.getEvaluationCompatibility().toString());
+            jFormattedTextFieldEvaluationSafety.setText(systemTestingResults.getEvaluationSafety().toString());
+            jFormattedTextFieldEvaluationPerformance.setText(systemTestingResults.getEvaluationPerformance().toString());
+             ((JTextField) jDateChooser6.getDateEditor().getUiComponent()).setText(systemTestingResults.getTestingDate().substring(0, 16));
+        } catch (NullPointerException nullPointerException) {
+            //JOptionPane.showMessageDialog(null, "Всі поля повинні містити значення", "Помилка збереження", JOptionPane.ERROR_MESSAGE);;
+            jTextFieldSystemTotalBugs.setText("");
+            jTextFieldSystemTotalBugFixes.setText("");
+            jFormattedTextFieldSystemEvaluationUsability.setText("");
+            jFormattedTextFieldExerciseTestingEvaluation.setText("");
+            jFormattedTextFieldEvaluationUI.setText("");
+            jFormattedTextFieldEvaluationCompatibility.setText("");
+            jFormattedTextFieldEvaluationSafety.setText("");
+            jFormattedTextFieldEvaluationPerformance.setText("");
+             ((JTextField) jDateChooser6.getDateEditor().getUiComponent()).setText("");
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jMenuItemViewSystemTestingResultsActionPerformed
 
+    private DefaultComboBoxModel loadDataAboutSystem() {
+    List< SystemTestingResults>  systemTestingResultsList = SystemTestingResultsFactory.getInstance().getSystemTestingResultsDAO().getAllSystemTestingResults();
+    Vector comboBoxItems= new Vector();
+        for (int i = 0; i < systemTestingResultsList.size(); i++) {
+            comboBoxItems.add(systemTestingResultsList.get(i).getSystemName());            
+        }    
+    final DefaultComboBoxModel model = new DefaultComboBoxModel(comboBoxItems);
+   // jComboBoxProject.addItem(jComboBoxProject.getSelectedItem());    
+    return model;
+    }
+      
+    private DefaultComboBoxModel loadDataAboutProject() {
+    List< Projects>  projectsList = null;
+        try {
+            projectsList = ProjectsFactory.getInstance().getProjectsDAO().getAllProjects();
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    Vector comboBoxItems= new Vector();
+        for (int i = 0; i < projectsList.size(); i++) {
+            comboBoxItems.add(projectsList.get(i).getProjectId().toString());            
+        }    
+    final DefaultComboBoxModel model = new DefaultComboBoxModel(comboBoxItems);
+   // jComboBoxProject.addItem(jComboBoxProject.getSelectedItem());    
+    return model;
+    }
+     
+    private DefaultComboBoxModel loadDataAboutBranch() {
+    List< Projects>  projectsList = null;
+        try {
+            projectsList = ProjectsFactory.getInstance().getProjectsDAO().getAllProjects();
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    Vector comboBoxItems= new Vector();
+        for (int i = 0; i < projectsList.size(); i++) {
+            comboBoxItems.add(projectsList.get(i).getProjectId().toString());            
+        }    
+    final DefaultComboBoxModel model = new DefaultComboBoxModel(comboBoxItems);
+   // jComboBoxProject.addItem(jComboBoxProject.getSelectedItem());    
+    return model;
+    }
+    
     private void jMenuItem26ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem26ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem26ActionPerformed
 
     private void jMenuItemSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveActionPerformed
-JFileChooser jFileChooser = new JFileChooser(directoryName);
+        JFileChooser jFileChooser = new JFileChooser(directoryName);
         jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         jFileChooser.setMultiSelectionEnabled(true);
         jFileChooser.setAcceptAllFileFilterUsed(false);
@@ -1622,8 +1734,8 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
         int i = 0;
         while (i < fileForChoose.length) {
             if (!fileForChoose[i].isFile() || !fileForChoose[i].canRead()) {
-                JOptionPane.showMessageDialog(null, "Файл " + fileForChoose[i].getName() + " является каталогом, не" +
-                        " доступен для записи или не создан!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Файл " + fileForChoose[i].getName() + " является каталогом, не"
+                        + " доступен для записи или не создан!", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (fileForChoose != null) {
@@ -1631,7 +1743,7 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
             }
             jLabelStatusBar.setText(directoryName);
             i++;
-        }       
+        }
     }//GEN-LAST:event_jMenuItemSaveActionPerformed
 
     private void jMenuItemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemExitActionPerformed
@@ -1639,152 +1751,151 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     }//GEN-LAST:event_jMenuItemExitActionPerformed
 
     private void jRadioButtonMenuItemWindowsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemWindowsActionPerformed
-         this.setVisible(false);
-    this.dispose();
-    try {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-    } catch (ClassNotFoundException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (UnsupportedLookAndFeelException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
-    testEstimationFrame.setVisible(true);
+        this.setVisible(false);
+        this.dispose();
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
+        testEstimationFrame.setVisible(true);
 
-    testEstimationFrame.jRadioButtonMenuItemMotif.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemClassic.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemNimbus.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemWindows.setSelected(true); 
-    testEstimationFrame.jRadioButtonMenuItemMetallic.setSelected(false);    
+        testEstimationFrame.jRadioButtonMenuItemMotif.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemClassic.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemNimbus.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemWindows.setSelected(true);
+        testEstimationFrame.jRadioButtonMenuItemMetallic.setSelected(false);
     }//GEN-LAST:event_jRadioButtonMenuItemWindowsActionPerformed
 
-    private void jRadioButtonMenuItemMotifActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemMotifActionPerformed
-         this.setVisible(false);
-    this.dispose();
-    try {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-    } catch (ClassNotFoundException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (UnsupportedLookAndFeelException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
-    testEstimationFrame.setVisible(true);
+    private void jRadioButtonMenuItemMotifActionPerformed(java.awt.event.ActionEvent evt)  {//GEN-FIRST:event_jRadioButtonMenuItemMotifActionPerformed
+        this.setVisible(false);
+        this.dispose();
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
+        testEstimationFrame.setVisible(true);
 
-    testEstimationFrame.jRadioButtonMenuItemMotif.setSelected(true);
-    testEstimationFrame.jRadioButtonMenuItemClassic.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemNimbus.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemWindows.setSelected(false); 
-    testEstimationFrame.jRadioButtonMenuItemMetallic.setSelected(false);    
+        testEstimationFrame.jRadioButtonMenuItemMotif.setSelected(true);
+        testEstimationFrame.jRadioButtonMenuItemClassic.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemNimbus.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemWindows.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemMetallic.setSelected(false);
     }//GEN-LAST:event_jRadioButtonMenuItemMotifActionPerformed
 
-    private void jRadioButtonMenuItemClassicActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemClassicActionPerformed
+    private void jRadioButtonMenuItemClassicActionPerformed(java.awt.event.ActionEvent evt)  {//GEN-FIRST:event_jRadioButtonMenuItemClassicActionPerformed
         this.setVisible(false);
-    this.dispose();
-    try {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel");
-    } catch (ClassNotFoundException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (UnsupportedLookAndFeelException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
-    testEstimationFrame.setVisible(true);
+        this.dispose();
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
+        testEstimationFrame.setVisible(true);
 
-    testEstimationFrame.jRadioButtonMenuItemMotif.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemClassic.setSelected(true);
-    testEstimationFrame.jRadioButtonMenuItemNimbus.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemWindows.setSelected(false); 
-    testEstimationFrame.jRadioButtonMenuItemMetallic.setSelected(false);    
+        testEstimationFrame.jRadioButtonMenuItemMotif.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemClassic.setSelected(true);
+        testEstimationFrame.jRadioButtonMenuItemNimbus.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemWindows.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemMetallic.setSelected(false);
     }//GEN-LAST:event_jRadioButtonMenuItemClassicActionPerformed
 
-    private void jRadioButtonMenuItemMetallicActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemMetallicActionPerformed
-    this.setVisible(false);
-    this.dispose();
-    try {
-        UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-    } catch (ClassNotFoundException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (UnsupportedLookAndFeelException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
-    testEstimationFrame.setVisible(true);
+    private void jRadioButtonMenuItemMetallicActionPerformed(java.awt.event.ActionEvent evt)  {//GEN-FIRST:event_jRadioButtonMenuItemMetallicActionPerformed
+        this.setVisible(false);
+        this.dispose();
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
+        testEstimationFrame.setVisible(true);
 
-    testEstimationFrame.jRadioButtonMenuItemMotif.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemClassic.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemNimbus.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemWindows.setSelected(false); 
-    testEstimationFrame.jRadioButtonMenuItemMetallic.setSelected(true);    
+        testEstimationFrame.jRadioButtonMenuItemMotif.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemClassic.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemNimbus.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemWindows.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemMetallic.setSelected(true);
 // TODO add your handling code here:
     }//GEN-LAST:event_jRadioButtonMenuItemMetallicActionPerformed
 
-    private void jRadioButtonMenuItemNimbusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemNimbusActionPerformed
-         this.setVisible(false);
-    this.dispose();
-    try {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-    } catch (ClassNotFoundException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (UnsupportedLookAndFeelException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
-    testEstimationFrame.setVisible(true);
+    private void jRadioButtonMenuItemNimbusActionPerformed(java.awt.event.ActionEvent evt)  {//GEN-FIRST:event_jRadioButtonMenuItemNimbusActionPerformed
+        this.setVisible(false);
+        this.dispose();
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
+        testEstimationFrame.setVisible(true);
 
-    testEstimationFrame.jRadioButtonMenuItemMotif.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemClassic.setSelected(false);
-    testEstimationFrame.jRadioButtonMenuItemNimbus.setSelected(true);
-    testEstimationFrame.jRadioButtonMenuItemWindows.setSelected(false); 
-    testEstimationFrame.jRadioButtonMenuItemMetallic.setSelected(false);    
+        testEstimationFrame.jRadioButtonMenuItemMotif.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemClassic.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemNimbus.setSelected(true);
+        testEstimationFrame.jRadioButtonMenuItemWindows.setSelected(false);
+        testEstimationFrame.jRadioButtonMenuItemMetallic.setSelected(false);
     }//GEN-LAST:event_jRadioButtonMenuItemNimbusActionPerformed
 
     private void jCheckBoxMenuItemStatusBarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemStatusBarActionPerformed
-       if (jCheckBoxMenuItemStatusBar.isSelected()){
-           jLabelStatusBar.setVisible(true);
-           
-       }else{
-           jLabelStatusBar.setVisible(false);
-       }
-           
-           
-        
+        if (jCheckBoxMenuItemStatusBar.isSelected()) {
+            jLabelStatusBar.setVisible(true);
+
+        } else {
+            jLabelStatusBar.setVisible(false);
+        }
+
+
     }//GEN-LAST:event_jCheckBoxMenuItemStatusBarActionPerformed
 
     private void jCheckBoxMenuItemWorkDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemWorkDataActionPerformed
-              if (jCheckBoxMenuItemWorkData.isSelected()){
-          // jTabbedPaneDate.setVisible(true);
-           jPanel6.setVisible(true);
-           jCheckBoxMenuItemEstimationResults.setEnabled(true);
-       }else{
-                  jPanel6.setVisible(false);
-                  jCheckBoxMenuItemEstimationResults.setEnabled(false);
-           //jTabbedPaneDate.setVisible(false);
-       }
+        if (jCheckBoxMenuItemWorkData.isSelected()) {
+            // jTabbedPaneDate.setVisible(true);
+            jPanel6.setVisible(true);
+            jCheckBoxMenuItemEstimationResults.setEnabled(true);
+        } else {
+            jPanel6.setVisible(false);
+            jCheckBoxMenuItemEstimationResults.setEnabled(false);
+            //jTabbedPaneDate.setVisible(false);
+        }
     }//GEN-LAST:event_jCheckBoxMenuItemWorkDataActionPerformed
 
     private void jMenuItemSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveAsActionPerformed
-       JFileChooser jFileChooser = new JFileChooser(directoryName);
+        JFileChooser jFileChooser = new JFileChooser(directoryName);
         jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         jFileChooser.setMultiSelectionEnabled(true);
         jFileChooser.setAcceptAllFileFilterUsed(false);
@@ -1796,8 +1907,8 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
         int i = 0;
         while (i < fileForChoose.length) {
             if (!fileForChoose[i].isFile() || !fileForChoose[i].canRead()) {
-                JOptionPane.showMessageDialog(null, "Файл " + fileForChoose[i].getName() + " является каталогом, не" +
-                        " доступен для записи или не создан!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Файл " + fileForChoose[i].getName() + " является каталогом, не"
+                        + " доступен для записи или не создан!", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (fileForChoose != null) {
@@ -1821,52 +1932,79 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     }//GEN-LAST:event_jMenuItemClearActionPerformed
 
     private void jMenuItemResetOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemResetOptionsActionPerformed
-        TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
+        TestEstimationFrame testEstimationFrame = null;
+        testEstimationFrame = new TestEstimationFrame();
         testEstimationFrame.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jMenuItemResetOptionsActionPerformed
 
     private void jMenuItem23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem23ActionPerformed
-    try {
-        UnitTestingResults unitTestingResults = UnitTestingResultsFactory.getInstance().getUnitTestingResultsDAO().getUnitTestingResultsByUnitTestingNumber(1);        // TODO add your handling code here:
-        jTextFieldUnitTotalBugs.setText(unitTestingResults.getTotalBugs().toString());
-        jFormattedTextFieldEvaluationRegressionTesting.setText(unitTestingResults.getEvaluationRegressionTesting().toString());
-        jTextFieldMockObjectNumber.setText(unitTestingResults.getMockObjectNumber().toString());
-        jFormattedTextFieldCoverRatioUnitTests.setText(unitTestingResults.getCoverRatioUnitTests().toString());
-        jTextFieldUnitTotalBugFixes.setText(unitTestingResults.getTotalBugFixes().toString());
-         ((JTextField)jDateChooser4.getDateEditor().getUiComponent()).setText( unitTestingResults.getTestingDate());        
-    } catch (SQLException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);        
-    }
+
+        try {
+            UnitTestingResults unitTestingResults = UnitTestingResultsFactory.getInstance().getUnitTestingResultsDAO().getUnitTestingResultsByUnitTestingNumber(Integer.parseInt(jSpinnerModalResultNumber.getValue().toString()));
+            unitTestingResultsCurrent = unitTestingResults;
+            jTextFieldUnitTotalBugs.setText(unitTestingResults.getTotalBugs().toString());
+            jFormattedTextFieldEvaluationRegressionTesting.setText(unitTestingResults.getEvaluationRegressionTesting().toString());
+            jTextFieldMockObjectNumber.setText(unitTestingResults.getMockObjectNumber().toString());
+            jFormattedTextFieldCoverRatioUnitTests.setText(unitTestingResults.getCoverRatioUnitTests().toString());
+            jTextFieldUnitTotalBugFixes.setText(unitTestingResults.getTotalBugFixes().toString());
+            jTextFieldReportedBugsNumber.setText(unitTestingResults.getReportedBugsNumber().toString());
+            ((JTextField) jDateChooser4.getDateEditor().getUiComponent()).setText(unitTestingResults.getTestingDate().substring(0, 16));
+        } catch (NullPointerException nullPointerException) {
+            jTextFieldUnitTotalBugs.setText("");
+            jFormattedTextFieldEvaluationRegressionTesting.setText("");
+            jTextFieldMockObjectNumber.setText("");
+            jFormattedTextFieldCoverRatioUnitTests.setText("");
+            jTextFieldUnitTotalBugFixes.setText("");
+            jTextFieldReportedBugsNumber.setText("");
+            ((JTextField) jDateChooser4.getDateEditor().getUiComponent()).setText("");
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jMenuItem23ActionPerformed
 
     private void jMenuItem20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem20ActionPerformed
-    try {
-        IntroducingResults introducingResults = IntroducingResultsFactory.getInstance().getIntroducingResultDAO().getIntroducingResultsByNumber(1);
-        jTextFieldIntroducingResultsTotalBugs.setText(introducingResults.getTotalBugs().toString());
-        jFormattedTextFieldIntroducingResultsTotalUserEstimation.setText(introducingResults.getTotalUserEstimation().toString());
-        jTextFieldFundsSpentOnImplementation.setText(introducingResults.getFundsSpentOnImplementation().toString());
-        jFormattedTextFieldIntroducingResultsStability.setText(introducingResults.getStability().toString());
-        jTextFieldPreliminaryIncome.setText(introducingResults.getPreliminaryIncome().toString());
-        ((JTextField)jDateChooser5.getDateEditor().getUiComponent()).setText( introducingResults.getIntroducingResultDate());        
-    } catch (SQLException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
-        
+        try {
+            IntroducingResults introducingResults = IntroducingResultsFactory.getInstance().getIntroducingResultDAO().getIntroducingResultsByNumber(Integer.parseInt(jSpinner1.getValue().toString()));
+            jTextFieldIntroducingResultsTotalBugs.setText(introducingResults.getTotalBugs().toString());
+            jFormattedTextFieldIntroducingResultsTotalUserEstimation.setText(introducingResults.getTotalUserEstimation().toString());
+            jTextFieldFundsSpentOnImplementation.setText(introducingResults.getFundsSpentOnImplementation().toString());
+            jFormattedTextFieldIntroducingResultsStability.setText(introducingResults.getStability().toString());
+            jTextFieldPreliminaryIncome.setText(introducingResults.getPreliminaryIncome().toString());
+            ((JTextField) jDateChooser5.getDateEditor().getUiComponent()).setText(introducingResults.getIntroducingResultDate().substring(0, 16));
+        } catch (NullPointerException nullPointerException) {
+            jTextFieldIntroducingResultsTotalBugs.setText("");
+            jFormattedTextFieldIntroducingResultsTotalUserEstimation.setText("");
+            jTextFieldFundsSpentOnImplementation.setText("");
+            jFormattedTextFieldIntroducingResultsStability.setText("");
+            jTextFieldPreliminaryIncome.setText("");
+            ((JTextField) jDateChooser5.getDateEditor().getUiComponent()).setText("");
+
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }//GEN-LAST:event_jMenuItem20ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-    try {    
-        ImplementationPlan implementationPlan = ImplementationPlanFactory.getInstance().getImplementationPlanDAO().getImplementationPlanByNumber("1");
-        jTextFieldImplementationPlanName.setText(implementationPlan.getImplementationPlanName());
-        jFormattedTextFieldImplementationPlanNumber.setText(implementationPlan.getImplementationPlanNumber().toString());
-        jTextFieldImplementationPlanExpectedIncome.setText(implementationPlan.getExpectedIncome().toString());
-        jFormattedTextFieldImplementationPlanStability.setText(implementationPlan.getStability().toString());
-        jTextFieldImplementationPlanTotalBugs.setText(implementationPlan.getTotalBugs().toString());
-        jFormattedTextFieldTotalUserEstimation.setText(implementationPlan.getStability().toString());
-    } catch (SQLException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
+        try {
+            ImplementationPlan implementationPlan = ImplementationPlanFactory.getInstance().getImplementationPlanDAO()
+                    .getImplementationPlanByNumber(Integer.parseInt(conversionStringVersion(jFormattedTextFieldImplementationPlanNumber.getText())));
+          
+            jTextFieldImplementationPlanExpectedIncome.setText(implementationPlan.getExpectedIncome().toString());
+            jTextFieldImplementationPlanName.setText(implementationPlan.getImplementationPlanName());              
+            jFormattedTextFieldImplementationPlanStability.setText(implementationPlan.getStability().toString());
+            jTextFieldImplementationPlanTotalBugs.setText(implementationPlan.getTotalBugs().toString());
+            jFormattedTextFieldTotalUserEstimation.setText(implementationPlan.getStability().toString());
+        } catch (NullPointerException nullPointerException) {
+            jTextFieldImplementationPlanName.setText("");
+            jTextFieldImplementationPlanExpectedIncome.setText("");
+            jFormattedTextFieldImplementationPlanStability.setText("");
+            jTextFieldImplementationPlanTotalBugs.setText("");
+            jFormattedTextFieldTotalUserEstimation.setText("");
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItemEstimateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemEstimateActionPerformed
@@ -1877,16 +2015,16 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
         estimationResults.setInternalResultsNumber(internalResultsNumber);
         estimationResults.setIntroducingResultNumber(internalResultsNumber);
         estimationResults.setImplementationPlanNumber(implementationPlanNumber);
-        if (jTextField12.getText()=="true"){
+        if (jTextField12.getText() == "true") {
             estimationResults.setNeedIntroduction(true);
-        } else{
+        } else {
             estimationResults.setNeedIntroduction(false);
         }
-    try {
-        EstimationResultFactory.getInstance().getEstimationResultsDAO().addEstimationResults(estimationResults);
-    } catch (SQLException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }            
+        try {
+            EstimationResultFactory.getInstance().getEstimationResultsDAO().addEstimationResults(estimationResults);
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jMenuItemEstimateActionPerformed
 
     private void jFormattedTextFieldSuccessProbabilityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFormattedTextFieldSuccessProbabilityActionPerformed
@@ -1894,18 +2032,18 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     }//GEN-LAST:event_jFormattedTextFieldSuccessProbabilityActionPerformed
 
     private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
-                  session = HibernateUtil.getSessionFactory().openSession();
+        session = HibernateUtil.getSessionFactory().openSession();
     }//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         UnitTestingResults unitTestingResults = new UnitTestingResults();
-        
+
         if (("".equals(jTextFieldUnitTotalBugs.getText()))
-                ||("".equals(jTextFieldMockObjectNumber.getText()))
-                ||("".equals(jTextFieldUnitTotalBugFixes.getText()))
-                ||("".equals(jTextFieldReportedBugsNumber.getText()))
-                ||("".equals(((JTextField)jDateChooser4.getDateEditor().getUiComponent()).getText()))){
-            JOptionPane.showMessageDialog(null, "Всі поля повинні містити значення", "Помилка збереження", JOptionPane.ERROR_MESSAGE);;
+                || ("".equals(jTextFieldMockObjectNumber.getText()))
+                || ("".equals(jTextFieldUnitTotalBugFixes.getText()))
+                || ("".equals(jTextFieldReportedBugsNumber.getText()))
+                || ("".equals(((JTextField) jDateChooser4.getDateEditor().getUiComponent()).getText()))) {
+            JOptionPane.showMessageDialog(null, "Всі поля повинні містити значення", "Помилка збереження", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1916,55 +2054,59 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
         unitTestingResults.setCoverRatioUnitTests(Integer.parseInt(conversionStringPercent(jFormattedTextFieldCoverRatioUnitTests.getText())));
         unitTestingResults.setTotalBugFixes(Integer.parseInt(jTextFieldUnitTotalBugFixes.getText()));
         unitTestingResults.setReportedBugsNumber(Integer.parseInt(jTextFieldReportedBugsNumber.getText()));
-        unitTestingResults.setTestingDate(((JTextField)jDateChooser4.getDateEditor().getUiComponent()).getText());
-    try {                
-        UnitTestingResultsFactory.getInstance().getUnitTestingResultsDAO().addUnitTestingResults(unitTestingResults);   
-    } catch (SQLException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
+        unitTestingResults.setTestingDate(((JTextField) jDateChooser4.getDateEditor().getUiComponent()).getText());
+        unitTestingResults.setBranchId(1);
+        unitTestingResults.setProjectId(1);
+        try {
+            UnitTestingResultsFactory.getInstance().getUnitTestingResultsDAO().addUnitTestingResults(unitTestingResults);
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     private void jMenuItem28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem28ActionPerformed
-          SystemTestingResults systemTestingResults = new SystemTestingResults();
-        
+        SystemTestingResults systemTestingResults = new SystemTestingResults();
+
         if (("".equals(jTextFieldSystemTotalBugs.getText()))
-                ||("".equals(jTextFieldSystemTotalBugFixes.getText()))
-                ||("".equals(jFormattedTextFieldSystemEvaluationUsability.getText()))
-                ||("".equals(jFormattedTextFieldExerciseTestingEvaluation.getText()))
-                ||("".equals(jFormattedTextFieldEvaluationUI.getText())) 
-                ||("".equals(jFormattedTextFieldEvaluationCompatibility.getText()))
-                ||("".equals(jFormattedTextFieldEvaluationSafety.getText()))
-                ||("".equals(jFormattedTextFieldEvaluationPerformance.getText()))
-                ||("".equals(((JTextComponent)jDateChooser6.getDateEditor().getUiComponent()).getText()))){
-            JOptionPane.showMessageDialog(null, "Всі поля повинні містити значення", "Помилка збереження", JOptionPane.ERROR_MESSAGE);;
+                || ("".equals(jTextFieldSystemTotalBugFixes.getText()))
+                || ("".equals(jFormattedTextFieldSystemEvaluationUsability.getText()))
+                || ("".equals(jFormattedTextFieldExerciseTestingEvaluation.getText()))
+                || ("".equals(jFormattedTextFieldEvaluationUI.getText()))
+                || ("".equals(jFormattedTextFieldEvaluationCompatibility.getText()))
+                || ("".equals(jFormattedTextFieldEvaluationSafety.getText()))
+                || ("".equals(jFormattedTextFieldEvaluationPerformance.getText()))
+                || ("".equals(((JTextComponent) jDateChooser6.getDateEditor().getUiComponent()).getText()))) {
+            JOptionPane.showMessageDialog(null, "Всі поля повинні містити значення", "Помилка збереження", JOptionPane.ERROR_MESSAGE);
             return;
         }
-          //Проинициализируем их
-          systemTestingResults.setTotalBugs(Integer.parseInt(jTextFieldSystemTotalBugs.getText()));        
-          systemTestingResults.setTotalBugFixes(Integer.parseInt(jTextFieldSystemTotalBugFixes.getText()));
+        //Проинициализируем их
+        systemTestingResults.setTotalBugs(Integer.parseInt(jTextFieldSystemTotalBugs.getText()));
+        systemTestingResults.setTotalBugFixes(Integer.parseInt(jTextFieldSystemTotalBugFixes.getText()));
         systemTestingResults.setEvaluationUsability(Integer.parseInt(conversionStringPercent(jFormattedTextFieldSystemEvaluationUsability.getText())));
         systemTestingResults.setExerciseTestingEvaluation(Integer.parseInt(conversionStringPercent(jFormattedTextFieldExerciseTestingEvaluation.getText())));
         systemTestingResults.setEvaluationUI(Integer.parseInt(conversionStringPercent(jFormattedTextFieldEvaluationUI.getText())));
         systemTestingResults.setEvaluationCompatibility(Integer.parseInt(conversionStringPercent(jFormattedTextFieldEvaluationCompatibility.getText())));
         systemTestingResults.setEvaluationSafety(Integer.parseInt(conversionStringPercent(jFormattedTextFieldEvaluationSafety.getText())));
         systemTestingResults.setEvaluationPerformance(Integer.parseInt(conversionStringPercent(jFormattedTextFieldEvaluationPerformance.getText())));
-        systemTestingResults.setTestingDate(((JTextField)jDateChooser6.getDateEditor().getUiComponent()).getText());
-    try {                
-        SystemTestingResultsFactory.getInstance().getSystemTestingResultsDAO().addSystemTestingResults(systemTestingResults);                
-    } catch (SQLException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
+        systemTestingResults.setTestingDate(((JTextField) jDateChooser6.getDateEditor().getUiComponent()).getText());
+        systemTestingResults.setBranchId(1);
+        systemTestingResults.setProjectId(1);
+        try {
+            SystemTestingResultsFactory.getInstance().getSystemTestingResultsDAO().addSystemTestingResults(systemTestingResults);
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jMenuItem28ActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        IntroducingResults introducingResults = new IntroducingResults();                                
-       
+        IntroducingResults introducingResults = new IntroducingResults();
+
         if (("".equals(jTextFieldIntroducingResultsTotalBugs.getText()))
-                ||("".equals(jFormattedTextFieldIntroducingResultsTotalUserEstimation.getText()))
-                ||("".equals(jTextFieldFundsSpentOnImplementation.getText()))
-                ||("".equals(jFormattedTextFieldIntroducingResultsStability.getText()))
-                ||("".equals(jTextFieldPreliminaryIncome.getText())) 
-                ||("".equals(((JTextField)jDateChooser5.getDateEditor().getUiComponent()).getText()))){
+                || ("".equals(jFormattedTextFieldIntroducingResultsTotalUserEstimation.getText()))
+                || ("".equals(jTextFieldFundsSpentOnImplementation.getText()))
+                || ("".equals(jFormattedTextFieldIntroducingResultsStability.getText()))
+                || ("".equals(jTextFieldPreliminaryIncome.getText()))
+                || ("".equals(((JTextField) jDateChooser5.getDateEditor().getUiComponent()).getText()))) {
             JOptionPane.showMessageDialog(null, "Всі поля повинні містити значення", "Помилка збереження", JOptionPane.ERROR_MESSAGE);;
             return;
         }
@@ -1972,47 +2114,133 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
         //Проинициализируем их        
         introducingResults.setTotalBugs(Integer.parseInt(jTextFieldIntroducingResultsTotalBugs.getText()));
         introducingResults.setTotalUserEstimation(Integer.parseInt(conversionStringPercent(jFormattedTextFieldIntroducingResultsTotalUserEstimation.getText())));
-        introducingResults.setFundsSpentOnImplementation(Integer.parseInt(jTextFieldFundsSpentOnImplementation.getText()));       
+        introducingResults.setFundsSpentOnImplementation(Integer.parseInt(jTextFieldFundsSpentOnImplementation.getText()));
         introducingResults.setStability(Integer.parseInt(conversionStringPercent(jFormattedTextFieldIntroducingResultsStability.getText())));
         introducingResults.setPreliminaryIncome(Integer.parseInt(jTextFieldPreliminaryIncome.getText()));
-        introducingResults.setIntroducingResultDate(((JTextField)jDateChooser5.getDateEditor().getUiComponent()).getText());     
-    try {       
-       IntroducingResultsFactory.getInstance().getIntroducingResultDAO().addIntroducingResults(introducingResults);                         
-    } catch (SQLException ex) {
-        Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
+        introducingResults.setIntroducingResultDate(((JTextField) jDateChooser5.getDateEditor().getUiComponent()).getText());
+        try {
+            IntroducingResultsFactory.getInstance().getIntroducingResultDAO().addIntroducingResults(introducingResults);
+        } catch (SQLException ex) {
+            Logger.getLogger(TestEstimationFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-   
-    public String conversionStringPercent(String percent){        
-        return percent.substring(0, 2)+percent.substring(3,4);
+
+    private void jspinnerNumberResultStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jspinnerNumberResultStateChanged
+        jMenuItemViewSystemTestingResultsActionPerformed(null);
+    }//GEN-LAST:event_jspinnerNumberResultStateChanged
+
+    private void jspinnerNumberResultKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jspinnerNumberResultKeyPressed
+        jMenuItemViewSystemTestingResultsActionPerformed(null);
+    }//GEN-LAST:event_jspinnerNumberResultKeyPressed
+
+    private void jSpinnerModalResultNumberStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinnerModalResultNumberStateChanged
+        jMenuItem23ActionPerformed(null);
+    }//GEN-LAST:event_jSpinnerModalResultNumberStateChanged
+
+    private void jSpinnerModalResultNumberKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jSpinnerModalResultNumberKeyPressed
+        jMenuItem23ActionPerformed(null);
+    }//GEN-LAST:event_jSpinnerModalResultNumberKeyPressed
+
+    private void jSpinner1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinner1StateChanged
+        jMenuItem20ActionPerformed(null);
+    }//GEN-LAST:event_jSpinner1StateChanged
+
+    private void jSpinner1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jSpinner1KeyPressed
+        jMenuItem20ActionPerformed(null);
+    }//GEN-LAST:event_jSpinner1KeyPressed
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        jMenuItem6ActionPerformed(null);
+        jMenuItem20ActionPerformed(null);
+        jMenuItem23ActionPerformed(null);
+        jMenuItemViewSystemTestingResultsActionPerformed(null);
+
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void jFormattedTextFieldImplementationPlanNumberKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jFormattedTextFieldImplementationPlanNumberKeyPressed
+        jMenuItem6ActionPerformed(null);
+    }//GEN-LAST:event_jFormattedTextFieldImplementationPlanNumberKeyPressed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        getSystemNameCount();
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jMenuItem24ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem24ActionPerformed
+        jTextFieldUnitTotalBugs.setText("");
+        jFormattedTextFieldEvaluationRegressionTesting.setText("");
+        jTextFieldMockObjectNumber.setText("");
+        jFormattedTextFieldCoverRatioUnitTests.setText("");
+        jTextFieldUnitTotalBugFixes.setText("");
+        jTextFieldReportedBugsNumber.setText("");
+        ((JTextField) jDateChooser4.getDateEditor().getUiComponent()).setText("");
+        try {
+            UnitTestingResultsFactory.getInstance().getUnitTestingResultsDAO().deleteUnitTestingNumber(unitTestingResultsCurrent);
+        } catch (Exception exception) {
+
+        }
+    }//GEN-LAST:event_jMenuItem24ActionPerformed
+
+    private void getSystemNameCount() {
+        Session session = null;
+        //private int systemCount;
+        UnitTestingResults unitTestingResults = null;
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            session.doWork(new Work() {
+
+                public void execute(Connection connection) throws SQLException {
+                    CallableStatement call = connection.prepareCall("{ ? = call MOROCHENETS_OLEXIY.GET_SYSTEM_COUNT() }");
+                    call.registerOutParameter(1, OracleTypes.CURSOR);
+                    call.execute();
+                    ResultSet resultSet = (ResultSet) call.getObject(1);
+                    while (resultSet.next()) {
+
+                        systemCount = resultSet.getInt("Count(*)");
+                        System.out.println("systemCount" + systemCount);
+
+                    }
+                }
+            });
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Ошибка I/O", JOptionPane.OK_OPTION);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
     }
-    
-    public String conversionStringVersion(String percent){
-        return percent.substring(3, 5)+percent.substring(6,8);
+
+    public String conversionStringPercent(String percent) {
+        return percent.substring(0, 2) + percent.substring(3, 4);
     }
-    
-    
+
+    public String conversionStringVersion(String percent) {
+        return percent.substring(3, 5) + percent.substring(6, 8);
+    }
+
     private Session session = null;
-        /**
+
+    /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
- 
- 
-      /*  try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getImplementationPlanName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+
+        /*  try {
+         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+         if ("Nimbus".equals(info.getImplementationPlanName())) {
+         javax.swing.UIManager.setLookAndFeel(info.getClassName());
+         break;
+         }
                 
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TestEstimationFrame.class.getImplementationPlanName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-*/
-        /* Create and display the form */        
+         }
+         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+         java.util.logging.Logger.getLogger(TestEstimationFrame.class.getImplementationPlanName()).log(java.util.logging.Level.SEVERE, null, ex);
+         }
+         //</editor-fold>
+         */
+        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -2024,11 +2252,14 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler2;
+    private javax.swing.JButton jButton1;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemEstimationResults;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemStatusBar;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemWorkData;
-    private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JComboBox jComboBoxBranch;
+    private javax.swing.JComboBox jComboBoxProject;
+    private javax.swing.JComboBox jComboBoxSystem;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private com.toedter.calendar.JDateChooser jDateChooser2;
     private com.toedter.calendar.JDateChooser jDateChooser4;
@@ -2070,6 +2301,7 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
@@ -2079,6 +2311,7 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel37;
+    private javax.swing.JLabel jLabel38;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -2112,6 +2345,7 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItemAboutProgram;
     private javax.swing.JMenuItem jMenuItemCalculate;
     private javax.swing.JMenuItem jMenuItemCheckUpdating;
@@ -2154,6 +2388,7 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     private javax.swing.JPopupMenu.Separator jSeparator11;
     private javax.swing.JPopupMenu.Separator jSeparator12;
     private javax.swing.JPopupMenu.Separator jSeparator13;
+    private javax.swing.JPopupMenu.Separator jSeparator14;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
@@ -2179,7 +2414,6 @@ JFileChooser jFileChooser = new JFileChooser(directoryName);
     private javax.swing.JTextField jTextFieldMockObjectNumber;
     private javax.swing.JTextField jTextFieldPreliminaryIncome;
     private javax.swing.JTextField jTextFieldReportedBugsNumber;
-    private javax.swing.JTextField jTextFieldSystemName;
     private javax.swing.JTextField jTextFieldSystemTotalBugFixes;
     private javax.swing.JTextField jTextFieldSystemTotalBugs;
     private javax.swing.JTextField jTextFieldUnitTotalBugFixes;

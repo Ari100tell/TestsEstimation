@@ -6,9 +6,12 @@
 
 package edu.cads.testestimation.userinterface;
 
+import edu.cads.testestimation.database.hibernate.InitializationConnection;
+import edu.cads.testestimation.database.hibernate.util.HibernateUtil;
 import javax.swing.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.hibernate.Session;
 
 /**
  *
@@ -164,6 +167,7 @@ public class AuthorizationFrame extends javax.swing.JFrame {
         } catch (UnsupportedLookAndFeelException ex) {
             Logger.getLogger(AuthorizationFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+    
         TestEstimationFrame testEstimationFrame = new TestEstimationFrame();
         testEstimationFrame.setVisible(true);    
         
@@ -194,8 +198,12 @@ public class AuthorizationFrame extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
+               Runnable initializationConnectionRunnable = new InitializationConnection();
+             Thread t = new Thread(initializationConnectionRunnable);
+             t.start();
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {    
+                
                 new AuthorizationFrame().setVisible(true);
             }
         });
