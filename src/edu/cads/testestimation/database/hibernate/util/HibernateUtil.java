@@ -7,7 +7,10 @@ package edu.cads.testestimation.database.hibernate.util;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.exception.JDBCConnectionException;
 import org.hibernate.service.ServiceRegistry;
+
+import javax.swing.*;
 
 public class HibernateUtil {
     private static SessionFactory sessionFactory = null;
@@ -16,9 +19,15 @@ public class HibernateUtil {
     static {
         Configuration configuration = new Configuration();
         configuration.configure();
+    //   configuration.setProperty("hibernate.connection.password", "0972414752");
         serviceRegistry = new StandardServiceRegistryBuilder().applySettings(
                 configuration.getProperties()).build();
-        sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+        try {
+            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+        } catch (JDBCConnectionException jdbcConnectionException){
+            JOptionPane.showMessageDialog(null, "Перевірте параметри підключення", "Помилка підключення", JOptionPane.ERROR_MESSAGE);
+        }
+
     }
 
     public static SessionFactory getSessionFactory() {
