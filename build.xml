@@ -10,7 +10,6 @@
 <project name="TestsEstimation" default="default" basedir=".">
     <description>Builds, tests, and runs the project TestsEstimation.</description>
     <import file="nbproject/build-impl.xml"/>
-    <dependency>
 
 	
 	<!--
