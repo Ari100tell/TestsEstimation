@@ -14,7 +14,7 @@ public interface ImplementationPlanDAO {
 
     public void updateImplementationPlan(ImplementationPlan implementationPlan) throws SQLException;
 
-    public ImplementationPlan getImplementationPlanByNumber(String implementationPlanNumber) throws SQLException;
+    public ImplementationPlan getImplementationPlanByNumber(Integer implementationPlanNumber) throws SQLException;
 
     public List getAllImplementationPlan() throws SQLException;
 

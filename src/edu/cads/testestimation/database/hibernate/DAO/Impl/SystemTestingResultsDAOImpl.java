@@ -68,7 +68,7 @@ public class SystemTestingResultsDAOImpl implements SystemTestingResultsDAO {
     }
 
     @Override
-    public List getAllSystemTestingResults() throws SQLException {
+    public List getAllSystemTestingResults(){
         Session session = null;
         List<SystemTestingResults> systemTestingResultsList = new ArrayList<SystemTestingResults>();
         try {

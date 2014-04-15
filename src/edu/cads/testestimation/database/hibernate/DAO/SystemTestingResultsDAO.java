@@ -15,7 +15,7 @@ public interface SystemTestingResultsDAO {
 
     public SystemTestingResults getSystemTestingResultsBySystemTestingNumber(int systemTestingNumber) throws SQLException;
 
-    public List getAllSystemTestingResults() throws SQLException;
+    public List getAllSystemTestingResults();
 
     public void deleteSystemTestingResults(SystemTestingResults systemTestingResults) throws SQLException;
 }
