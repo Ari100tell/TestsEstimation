@@ -12,6 +12,10 @@ public class Student {
     private String name;
     private Long age;
 
+    public void setStat(Statistics stat) {
+        this.stat = stat;
+    }
+
     public Student(){
         name = null;
     }
@@ -27,26 +31,31 @@ public class Student {
     public Long getId() {
         return id;
     }
+    public void setId(Long i){
+        id = i;
+    }
 
     @Column(name="name")
     public String getName(){
         return name;
+    }
+    public void setName(String s){
+        name = s;
     }
 
     @Column(name="age")
     public Long getAge(){
         return age;
     }
-
-    public void setId(Long i){
-        id = i;
-    }
-
-    public void setName(String s){
-        name = s;
-    }
-
     public void setAge(Long l){
         age = l;
+    }
+
+    private Statistics stat;
+
+    @ManyToOne
+    @JoinColumn(name = "id")
+    public Statistics getStat(){
+        return stat;
     }
 }
