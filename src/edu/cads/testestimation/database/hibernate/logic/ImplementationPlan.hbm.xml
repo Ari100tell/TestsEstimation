@@ -12,11 +12,11 @@
         </id>
 
         <property name="implementationPlanName" type="string">
-            <column name="IMPLEMENTATION_PLAN_NAME" />
+            <column name="IMPLEMENTATION_PLAN_NAME"/>
         </property>
 
         <property name="implementationDate" type="string">
-            <column name="IMPLEMENTATION_DATE" />
+            <column name="IMPLEMENTATION_DATE"/>
         </property>
 
         <property name="expectedIncome" type="java.lang.Integer">

@@ -4,6 +4,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "SYSTEM_TESTING_RESULTS")
@@ -21,12 +23,14 @@ public class SystemTestingResults implements Serializable {
     private Integer evaluationCompatibility;
     private Integer evaluationSafety;
     private Integer evaluationPerformance;
+    private Integer projectId;
+    private Integer branchId;
 
 
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
-     @Column(name = "SYSTEM_TESTING_NUMBER")
+    @Column(name = "SYSTEM_TESTING_NUMBER")
     public Integer getSystemTestingNumber() {
         return systemTestingNumber;
     }
@@ -123,5 +127,35 @@ public class SystemTestingResults implements Serializable {
 
     public void setSystemName(String systemName) {
         this.systemName = systemName;
+    }
+
+
+    private Set<InternalTestingResults> internalTestingResultsSet = new HashSet<InternalTestingResults>(0);
+
+    @Column(name = "PROJECT_ID")
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
+    }
+
+    @Column(name = "BRANCH_ID")
+    public Integer getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(Integer branchId) {
+        this.branchId = branchId;
+    }
+    @OneToMany
+    @JoinColumn(name = "SYSTEM_TESTING_NUMBER")
+    public Set<InternalTestingResults> getInternalTestingResultsSet() {
+        return internalTestingResultsSet;
+    }
+
+    public void setInternalTestingResultsSet(Set<InternalTestingResults> internalTestingResultsSet) {
+        this.internalTestingResultsSet = internalTestingResultsSet;
     }
 }

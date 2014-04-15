@@ -1,10 +1,9 @@
 package edu.cads.testestimation.database.hibernate.logic;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -30,7 +29,8 @@ public class ImplementationPlan implements Serializable {
     }
 
     public void setImplementationPlanNumber(Integer implementationPlanNumber) {
-        this.implementationPlanNumber = implementationPlanNumber;}
+        this.implementationPlanNumber = implementationPlanNumber;
+    }
 
     @Column(name = "TOTAL_USER_ESTIMATION")
     public Integer getTotalUserEstimation() {
@@ -84,5 +84,21 @@ public class ImplementationPlan implements Serializable {
 
     public void setImplementationPlanName(String implementationPlanName) {
         this.implementationPlanName = implementationPlanName;
+    }
+
+    private ImplementationPlan implementationPlan;
+
+    //реализация отношения один ко многим, где один план внедрения и для него разные результаты оценивания
+
+    private Set<EstimationResults> estimationResultsSet = new HashSet<EstimationResults>(0);
+
+    @OneToMany
+    @JoinColumn(name = "IMPLEMENTATION_PLAN_NUMBER")
+    public Set<EstimationResults> getEstimationResultsSet() {
+        return estimationResultsSet;
+    }
+
+    public void setEstimationResultsSet(Set<EstimationResults> estimationResultsSet) {
+        this.estimationResultsSet = estimationResultsSet;
     }
 }

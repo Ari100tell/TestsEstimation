@@ -40,7 +40,7 @@ public class EstimationResults implements Serializable {
         this.estimationDate = estimationDate;
     }
 
-    @Column (name = "INTERNAL_RESULTS_NUMBER")
+    @Column(name = "INTERNAL_RESULTS_NUMBER")
 
     public Integer getInternalResultsNumber() {
         return internalResultsNumber;
@@ -96,5 +96,39 @@ public class EstimationResults implements Serializable {
         this.needIntroduction = needIntroduction;
     }
 
+    private InternalTestingResults internalTestingResults;
 
+    @ManyToOne
+    @JoinColumn(name = "INTERNAL_RESULTS_NUMBER", referencedColumnName = "INTERNAL_RESULTS_NUMBER", insertable = false, updatable = false)
+    public InternalTestingResults getInternalTestingResults() {
+        return internalTestingResults;
+    }
+
+    public void setInternalTestingResults(InternalTestingResults internalTestingResults) {
+        this.internalTestingResults = internalTestingResults;
+    }
+
+    private IntroducingResults introducingResults;
+
+    @ManyToOne
+    @JoinColumn(name = "INTRODUCING_RESULT_NUMBER", referencedColumnName = "INTRODUCING_RESULT_NUMBER", insertable = false, updatable = false)
+    public IntroducingResults getIntroducingResults() {
+        return introducingResults;
+    }
+
+    public void setIntroducingResults(IntroducingResults introducingResults) {
+        this.introducingResults = introducingResults;
+    }
+
+    private ImplementationPlan implementationPlan;
+
+    @ManyToOne
+    @JoinColumn(name = "IMPLEMENTATION_PLAN_NUMBER", referencedColumnName = "IMPLEMENTATION_PLAN_NUMBER", insertable = false, updatable = false)
+    public ImplementationPlan getImplementationPlan() {
+        return implementationPlan;
+    }
+
+    public void setImplementationPlan(ImplementationPlan implementationPlan) {
+        this.implementationPlan = implementationPlan;
+    }
 }

@@ -4,12 +4,14 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "INTERNAL_TESTING_RESULTS")
 
 
-public class InternalTestingResults implements Serializable{
+public class InternalTestingResults implements Serializable {
 
 
     private Integer internalResultNumber;
@@ -25,7 +27,7 @@ public class InternalTestingResults implements Serializable{
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
-     @Column(name = "INTERNAL_RESULTS_NUMBER")
+    @Column(name = "INTERNAL_RESULTS_NUMBER")
     public Integer getInternalResultNumber() {
         return internalResultNumber;
     }
@@ -33,6 +35,7 @@ public class InternalTestingResults implements Serializable{
     public void setInternalResultNumber(Integer internalResultNumber) {
         this.internalResultNumber = internalResultNumber;
     }
+
     @Column(name = "AVAILABILITY_MAJOR_BUGS")
     public Integer getAvailabilityMajorBugs() {
         return availabilityMajorBugs;
@@ -104,4 +107,42 @@ public class InternalTestingResults implements Serializable{
     public void setInternalResultDate(String internalResultDate) {
         this.internalResultDate = internalResultDate;
     }
+
+
+    private UnitTestingResults unitTestingResults;
+
+    @ManyToOne
+    @JoinColumn(name = "UNIT_TESTING_NUMBER", referencedColumnName = "UNIT_TESTING_NUMBER", insertable = false, updatable = false)
+    public UnitTestingResults getUnitTestingResults() {
+        return unitTestingResults;
+    }
+
+    public void setUnitTestingResults(UnitTestingResults unitTestingResults) {
+        this.unitTestingResults = unitTestingResults;
+    }
+
+    private SystemTestingResults systemTestingResults;
+
+    @ManyToOne
+    @JoinColumn(name = "SYSTEM_TESTING_NUMBER", referencedColumnName = "SYSTEM_TESTING_NUMBER", insertable = false, updatable = false)
+    public SystemTestingResults getSystemTestingResults() {
+        return systemTestingResults;
+    }
+
+    public void setSystemTestingResults(SystemTestingResults systemTestingResults) {
+        this.systemTestingResults = systemTestingResults;
+    }
+
+    private Set<EstimationResults> estimationResultsSet = new HashSet<EstimationResults>(0);
+
+    @OneToMany
+    @JoinColumn(name = "INTERNAL_RESULTS_NUMBER")
+    public Set<EstimationResults> getEstimationResultsSet() {
+        return estimationResultsSet;
+    }
+
+    public void setEstimationResultsSet(Set<EstimationResults> estimationResultsSet) {
+        this.estimationResultsSet = estimationResultsSet;
+    }
+
 }

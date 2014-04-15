@@ -28,7 +28,7 @@
         </property>
 
         <property name="evaluationUsability" type="java.lang.Integer">
-            <column name="EVALUATION_USABILITY" />
+            <column name="EVALUATION_USABILITY"/>
         </property>
 
         <property name="exerciseTestingEvaluation" type="java.lang.Integer">

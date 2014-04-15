@@ -42,5 +42,7 @@
         <property name="testingDate" type="string">
             <column name="TESTING_DATE" length="30" not-null="true" unique="true"/>
         </property>
+
+
     </class>
 </hibernate-mapping>

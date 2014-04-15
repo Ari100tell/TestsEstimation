@@ -4,11 +4,12 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "INTRODUCING_RESULTS")
 public class IntroducingResults implements Serializable {
-
 
     private Integer introducingResultNumber;
     private String introducingResultDate;
@@ -83,4 +84,17 @@ public class IntroducingResults implements Serializable {
     public void setIntroducingResultDate(String introducingResultDate) {
         this.introducingResultDate = introducingResultDate;
     }
+
+    private Set<EstimationResults> estimationResultsSet = new HashSet<EstimationResults>(0);
+
+    @OneToMany
+    @JoinColumn(name = "INTRODUCING_RESULT_NUMBER")
+    public Set<EstimationResults> getEstimationResultsSet() {
+        return estimationResultsSet;
+    }
+
+    public void setEstimationResultsSet(Set<EstimationResults> estimationResultsSet) {
+        this.estimationResultsSet = estimationResultsSet;
+    }
+
 }

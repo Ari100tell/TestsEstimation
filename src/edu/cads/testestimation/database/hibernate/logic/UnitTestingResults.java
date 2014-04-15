@@ -4,6 +4,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "UNIT_TESTING_RESULTS")
@@ -19,8 +21,8 @@ public class UnitTestingResults implements Serializable {
     private Integer reportedBugsNumber;
     private Integer totalBugFixes;
     private String testingDate;
-
-
+    private Integer projectId;
+    private Integer branchId;
 
 
     @Id
@@ -36,6 +38,7 @@ public class UnitTestingResults implements Serializable {
     public void setUnitTestingNumber(Integer unitTestingNumber) {
         this.unitTestingNumber = unitTestingNumber;
     }
+
     @Column(name = "SYSTEM_NAME")
     public String getSystemName() {
         return systemName;
@@ -62,7 +65,6 @@ public class UnitTestingResults implements Serializable {
     public void setEvaluationRegressionTesting(Integer evaluationRegressionTesting) {
         this.evaluationRegressionTesting = evaluationRegressionTesting;
     }
-
 
     @Column(name = "MOCK_OBJECT_NUMBER")
     public Integer getMockObjectNumber() {
@@ -107,5 +109,35 @@ public class UnitTestingResults implements Serializable {
 
     public void setTestingDate(String testingDate) {
         this.testingDate = testingDate;
+    }
+
+    private Set<InternalTestingResults> internalTestingResultsSet = new HashSet<InternalTestingResults>(0);
+
+    @Column(name = "PROJECT_ID")
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
+    }
+
+    @Column(name = "BRANCH_ID")
+    public Integer getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(Integer branchId) {
+        this.branchId = branchId;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "UNIT_TESTING_NUMBER")
+    public Set<InternalTestingResults> getInternalTestingResultsSet() {
+        return internalTestingResultsSet;
+    }
+
+    public void setInternalTestingResultsSet(Set<InternalTestingResults> internalTestingResultsSet) {
+        this.internalTestingResultsSet = internalTestingResultsSet;
     }
 }
